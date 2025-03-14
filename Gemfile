@@ -72,7 +72,6 @@ group :development do
   gem "binding_of_caller"
   gem "grade_runner"
   gem "pry-rails"
-  gem "rails_db"
   gem "rails-erd"
   gem "rufo"
 end
