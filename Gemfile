@@ -55,3 +55,37 @@ group :development do
   # Use console on exceptions pages [https://github.com/rails/web-console]
   gem "web-console"
 end
+
+# Additional gems for AppDev 2
+gem "active_link_to"
+gem "awesome_print"
+gem "dotenv"
+gem "faker"
+gem "htmlbeautifier"
+gem "http"
+gem "table_print"
+gem "simple_form"
+
+group :development do
+  gem "annotate"
+  gem "better_errors"
+  gem "binding_of_caller"
+  gem "grade_runner"
+  gem "pry-rails"
+  gem "rails_db"
+  gem "rails-erd"
+  gem "rufo"
+end
+
+group :development, :test do
+  gem "rspec-rails", "~> 6.0.0"
+end
+
+group :test do
+  gem "shoulda-matchers", "~> 4.0"
+  gem "rspec-html-matchers"
+  gem "webmock"
+  gem "capybara"
+  gem "selenium-webdriver"
+  gem "webdrivers"
+end

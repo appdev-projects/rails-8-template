@@ -1,24 +1,13 @@
-# README
+# rails-8-template
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+For your AppDev-2 Projects!
 
-Things you may want to cover:
+## Codespaces
 
-* Ruby version
+Docker image used in `.devcontainer/devcontainer.json` is built and pushed with:
 
-* System dependencies
+```
+docker build --platform linux/amd64 -t firstdraft/appdev-rails-8-template -f appdev.rails8.Dockerfile .
 
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+docker push firstdraft/appdev-rails-8-template
+```
