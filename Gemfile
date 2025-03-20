@@ -90,6 +90,6 @@ group :test do
   gem "rspec-html-matchers"
   gem "webmock"
   gem "capybara"
-  gem "selenium-webdriver", "~> 4.11.0"
+  gem "selenium-webdriver", "~> 4.29.1"
   gem "webdrivers"
 end
