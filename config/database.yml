@@ -95,6 +95,7 @@ production:
   primary: &primary_production
     <<: *default
     url: <%= ENV["DATABASE_URL"] %>
+    encoding: utf8
   cache:
     <<: *primary_production
     database: rails_8_template_production_cache
