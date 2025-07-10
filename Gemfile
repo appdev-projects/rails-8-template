@@ -56,32 +56,36 @@ group :development do
   gem "web-console"
 end
 
-# Additional gems for AppDev 2
+# Additional gems for AppDev
 gem "active_link_to"
+gem "appdev_support"
 gem "awesome_print"
+gem "devise"
 gem "dotenv"
+gem "carrierwave"
+gem "cloudinary"
 gem "faker"
 gem "htmlbeautifier"
 gem "http"
-gem "table_print"
-gem "simple_form"
-gem "devise"
+gem "kaminari"
+gem "openai-chat"
 gem "pundit"
 gem "ransack"
+gem "simple_form"
 gem "strip_attributes"
 gem "validate_url"
-gem "carrierwave"
-gem "cloudinary"
-gem "kaminari"
 
 group :development do
   gem "annotaterb"
   gem "better_errors"
   gem "binding_of_caller"
+  gem "dev_toolbar", "~> 2.1.0"
+  gem "draft_generators"
+  gem "haikunator"
   gem "pry-rails"
+  gem "rails_db", "~> 2.5.0"
   gem "rails-erd"
   gem "rufo"
-  gem "haikunator"
 end
 
 group :development, :test do
