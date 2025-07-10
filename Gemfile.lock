@@ -514,7 +514,6 @@ GEM
     stringio (3.1.5)
     strip_attributes (2.0.0)
       activemodel (>= 3.0, < 9.0)
-    table_print (1.5.7)
     tabulo (3.0.3)
       tty-screen (= 0.8.2)
       unicode-display_width (~> 3.0)
@@ -623,7 +622,6 @@ DEPENDENCIES
   solid_queue
   stimulus-rails
   strip_attributes
-  table_print
   thruster
   turbo-rails
   tzinfo-data

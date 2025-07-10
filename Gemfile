@@ -73,7 +73,6 @@ gem "pundit"
 gem "ransack"
 gem "simple_form"
 gem "strip_attributes"
-gem "table_print"
 gem "validate_url"
 
 group :development do
