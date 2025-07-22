@@ -412,6 +412,7 @@ GEM
       actionpack (>= 5.2)
       railties (>= 5.2)
     rexml (3.4.1)
+    rollbar (3.6.2)
     rouge (4.5.1)
     rspec (3.13.0)
       rspec-core (~> 3.13.0)
@@ -610,6 +611,7 @@ DEPENDENCIES
   rails-erd
   rails_db (~> 2.5.0)
   ransack
+  rollbar
   rspec-html-matchers
   rspec-rails (~> 7.1.1)
   rubocop-rails-omakase
