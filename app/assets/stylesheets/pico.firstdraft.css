@@ -1,0 +1,218 @@
+/* ================================================
+   PICO.FIRSTDRAFT.CSS
+   Custom styles to enhance Pico CSS framework
+=================================================== */
+
+/* ================================================
+   PAGE STRUCTURE
+=================================================== */
+
+/* Body layout for sticky footer */
+body.pico {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Navbar styling */
+body.pico > header {
+  background-color: var(--pico-color-grey-50);
+}
+
+/* Main content should grow to fill available space */
+body.pico > main {
+  flex: 1;
+  padding-bottom: calc(var(--pico-spacing) * 3);
+  margin-top: calc(var(--pico-spacing) * 1);
+}
+
+/* Footer styling */
+body.pico > footer {
+  padding-top: calc(var(--pico-spacing) * 3);
+  padding-bottom: calc(var(--pico-spacing) * 3);
+  background-color: var(--pico-color-grey-150);
+  margin-top: auto; /* Push footer to bottom */
+}
+
+/* ================================================
+   CUSTOM CONTAINERS
+=================================================== */
+
+/* Custom container variants */
+.pico .container-half,
+.pico .container-two-thirds {
+  width: 100%;
+  margin-right: auto;
+  margin-left: auto;
+  padding-right: var(--pico-spacing);
+  padding-left: var(--pico-spacing);
+}
+
+/* Container half - full width on mobile/small, 50% on medium+ */
+@media (min-width: 768px) {
+  .pico .container-half {
+    max-width: 350px; /* 700px / 2 */
+  }
+}
+
+@media (min-width: 1024px) {
+  .pico .container-half {
+    max-width: 475px; /* 950px / 2 */
+  }
+}
+
+@media (min-width: 1280px) {
+  .pico .container-half {
+    max-width: 600px; /* 1200px / 2 */
+  }
+}
+
+@media (min-width: 1536px) {
+  .pico .container-half {
+    max-width: 725px; /* 1450px / 2 */
+  }
+}
+
+/* Container two-thirds - full width on mobile/small, 66.67% on medium+ */
+@media (min-width: 768px) {
+  .pico .container-two-thirds {
+    max-width: 467px; /* 700px * 2/3 */
+  }
+}
+
+@media (min-width: 1024px) {
+  .pico .container-two-thirds {
+    max-width: 633px; /* 950px * 2/3 */
+  }
+}
+
+@media (min-width: 1280px) {
+  .pico .container-two-thirds {
+    max-width: 800px; /* 1200px * 2/3 */
+  }
+}
+
+@media (min-width: 1536px) {
+  .pico .container-two-thirds {
+    max-width: 967px; /* 1450px * 2/3 */
+  }
+}
+
+/* ================================================
+   TYPOGRAPHY & CONTENT
+=================================================== */
+
+/* Remove bottom margin from last child of list items (excluding nav) */
+.pico li:not(nav li) > :last-child {
+  margin-bottom: 0;
+}
+
+/* Description list styling - match Bootstrap */
+.pico dl {
+  padding-top: var(--pico-spacing);
+}
+
+.pico dt {
+  font-weight: 700;
+}
+
+.pico dd {
+  margin-bottom: calc(var(--pico-spacing) * 0.5); /* 0.5rem */
+  margin-left: 0;
+}
+
+.pico form {
+  padding-top: var(--pico-spacing);
+  padding-bottom: var(--pico-spacing);
+}
+
+/* ================================================
+   CARDS
+=================================================== */
+
+/* Remove bottom margin from last element in cards */
+.pico article > :last-child {
+  margin-bottom: 0;
+}
+
+/* Remove bottom margin from last element in card headers */
+.pico article > header {
+  margin-bottom: 0;
+}
+
+/* Remove bottom margin from last element in card headers */
+.pico article > header > :last-child {
+  margin-bottom: 0;
+}
+
+/* List group flush within card - similar to Bootstrap */
+.pico article > ul {
+  margin-left: calc(var(--pico-spacing) * -1);
+  margin-right: calc(var(--pico-spacing) * -1);
+  padding-left: 0;
+}
+
+.pico article > ul > li {
+  list-style-type: none;
+  padding: calc(var(--pico-spacing) * 0.75) var(--pico-spacing);
+  border-bottom: 1px solid var(--pico-muted-border-color);
+  margin-bottom: 0;
+}
+
+/* List group action items - similar to Bootstrap */
+.pico article > ul > li > a:only-child {
+  display: flex;
+  align-items: center;
+  gap: var(--pico-spacing);
+  text-decoration: none;
+  /* Use negative margins to extend link to full width */
+  margin: calc(var(--pico-spacing) * -0.75) calc(var(--pico-spacing) * -1);
+  padding: calc(var(--pico-spacing) * 0.75) var(--pico-spacing);
+  /* Inherit color from parent */
+  color: inherit;
+}
+
+/* Add chevron to action items */
+.pico article > ul > li > a:only-child::after {
+  content: "›";
+  font-size: calc(var(--pico-font-size) * 1.5);
+  line-height: 1;
+  opacity: 0.5;
+  margin-left: auto;
+}
+
+/* Add hover state */
+.pico article > ul > li > a:only-child:hover {
+  background-color: var(--pico-primary-background);
+  color: var(--pico-primary-inverse);
+}
+
+/* Active state using Pico's aria-current convention */
+.pico article > ul > li > a:only-child[aria-current="page"] {
+  background-color: var(--pico-primary-background);
+  color: var(--pico-primary-inverse);
+}
+
+/* Chevron color for active state */
+.pico article > ul > li > a:only-child[aria-current="page"]::after {
+  opacity: 1;
+}
+
+/* ================================================== 
+   TABLE FLUSH
+=================================================== */
+
+/* Remove borders and padding from tables that are direct children of articles 
+   or wrapped in a div for overflow handling */
+.pico article > table {
+  /* Use negative margins to extend table to full article width */
+  margin-left: calc(var(--pico-spacing) * -1);
+  margin-right: calc(var(--pico-spacing) * -1);
+  width: calc(100% + calc(var(--pico-spacing) * 2));
+}
+
+/* When wrapped in overflow div, apply negative margins to the wrapper instead */
+.pico article > div.overflow-auto {
+  margin-left: calc(var(--pico-spacing) * -1);
+  margin-right: calc(var(--pico-spacing) * -1);
+}

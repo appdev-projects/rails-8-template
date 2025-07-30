@@ -8,3 +8,8 @@
  *
  * Consider organizing styles into separate files for maintainability.
  */
+
+@import "custom-image.css";
+@import "bootstrap-utilities.css";
+@import "pico.pagy.css";
+@import "pico.firstdraft.css";

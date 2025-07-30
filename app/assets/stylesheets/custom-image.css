@@ -1,0 +1,21 @@
+/* Custom image styles, mostly for Phase 2 Photogram targets */
+
+.img-cover {
+  object-fit: cover;
+  object-position: center;
+}
+
+.img-small {
+  width: 36px;
+  height: 36px;
+}
+
+.img-medium {
+  width: 128px;
+  height: 128px;
+}
+
+.img-large {
+  width: 200px;
+  height: 200px;
+}
