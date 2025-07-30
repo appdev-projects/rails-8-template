@@ -1,0 +1,115 @@
+/* Pagy pagination styles for Pico CSS - Bootstrap-like appearance */
+
+/* Pagination container */
+nav.pagy.nav {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0;
+  margin-top: calc(var(--pico-spacing) * 2);
+  margin-bottom: var(--pico-spacing);
+  font-size: var(--pico-font-size);
+}
+
+/* All pagination links */
+nav.pagy.nav a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.5rem;
+  height: 2.5rem;
+  padding: 0.375rem 0.75rem;
+  text-decoration: none;
+  border: 1px solid var(--pico-muted-border-color);
+  border-radius: 0;
+  margin-left: -1px;
+  transition: all 0.15s ease-in-out;
+  color: var(--pico-primary);
+  background-color: var(--pico-background-color);
+  position: relative;
+}
+
+/* First item rounded left */
+nav.pagy.nav a:first-child {
+  border-top-left-radius: var(--pico-border-radius);
+  border-bottom-left-radius: var(--pico-border-radius);
+  margin-left: 0;
+}
+
+/* Last item rounded right */
+nav.pagy.nav a:last-child {
+  border-top-right-radius: var(--pico-border-radius);
+  border-bottom-right-radius: var(--pico-border-radius);
+}
+
+/* Hover state for clickable links */
+nav.pagy.nav a[href]:hover {
+  z-index: 2;
+  color: var(--pico-primary-hover);
+  background-color: var(--pico-secondary-background);
+  border-color: var(--pico-primary-hover);
+}
+
+/* Active/current page */
+nav.pagy.nav a.current {
+  z-index: 3;
+  color: var(--pico-primary-inverse);
+  background-color: var(--pico-primary);
+  border-color: var(--pico-primary);
+  cursor: default;
+}
+
+/* Disabled items (previous/next when not available) */
+nav.pagy.nav a[aria-disabled="true"]:not(.current):not(.gap) {
+  color: var(--pico-muted-color);
+  background-color: var(--pico-background-color);
+  border-color: var(--pico-muted-border-color);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Gap indicator */
+nav.pagy.nav a.gap {
+  color: var(--pico-muted-color);
+  background-color: var(--pico-background-color);
+  border-color: var(--pico-muted-border-color);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+nav.pagy.nav a.gap:hover {
+  color: var(--pico-muted-color);
+  background-color: var(--pico-background-color);
+  border-color: var(--pico-muted-border-color);
+}
+
+/* Previous/Next text labels */
+nav.pagy.nav a[aria-label="Previous"],
+nav.pagy.nav a[aria-label="Next"] {
+  min-width: auto;
+  padding: 0.375rem 1rem;
+  font-size: calc(var(--pico-font-size) * 1.5);
+  line-height: 1;
+}
+
+/* Focus state */
+nav.pagy.nav a:focus {
+  z-index: 3;
+  outline: 2px solid var(--pico-primary);
+  outline-offset: -1px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 576px) {
+  nav.pagy.nav a {
+    min-width: 2rem;
+    height: 2rem;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+  }
+  
+  nav.pagy.nav a[aria-label="Previous"],
+  nav.pagy.nav a[aria-label="Next"] {
+    padding: 0.25rem 0.75rem;
+  }
+}
