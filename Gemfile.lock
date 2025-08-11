@@ -1,3 +1,12 @@
+GIT
+  remote: https://github.com/firstdraft/draft_generators.git
+  revision: a41019a2277fd2ca0def7a242e35cc684cb76ad2
+  branch: bp-summer-2025-update
+  specs:
+    draft_generators (0.0.5)
+      devise
+      indefinite_article
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -147,9 +156,6 @@ GEM
     diff-lcs (1.6.0)
     domain_name (0.6.20240107)
     dotenv (3.1.7)
-    draft_generators (0.0.4)
-      devise
-      indefinite_article
     drb (2.2.1)
     ed25519 (1.3.0)
     erubi (1.13.1)
@@ -591,7 +597,7 @@ DEPENDENCIES
   dev_toolbar (~> 2.1.0)
   devise
   dotenv
-  draft_generators
+  draft_generators!
   faker
   grade_runner (~> 0.0.13)
   haikunator

@@ -82,7 +82,7 @@ group :development do
   gem "better_errors"
   gem "binding_of_caller"
   gem "dev_toolbar", "~> 2.1.0"
-  gem "draft_generators"
+  gem "draft_generators", github: "firstdraft/draft_generators", branch: "bp-summer-2025-update"
   gem "haikunator"
   gem "pry-rails"
   gem "rails_db", "~> 2.5.0"
