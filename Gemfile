@@ -58,6 +58,7 @@ end
 
 # Additional gems for AppDev
 gem "active_link_to"
+gem "ai-chat"
 gem "appdev_support"
 gem "awesome_print"
 gem "devise"
@@ -68,7 +69,6 @@ gem "faker"
 gem "htmlbeautifier"
 gem "http"
 gem "kaminari"
-gem "openai-chat"
 gem "pagy"
 gem "pundit"
 gem "ransack"
