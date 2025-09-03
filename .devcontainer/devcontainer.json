@@ -35,9 +35,6 @@
 
   "otherPortsAttributes": {"onAutoForward": "ignore"},
 
-  // Use 'initializeCommand' to run commands during initialization of container.
-  "initializeCommand": ".devcontainer/initialize.sh",
-
   // Use 'postCreateCommand' to run commands after the container is created.
   "postCreateCommand": "bin/setup && gem install rufo && gem install htmlbeautifier",
 
