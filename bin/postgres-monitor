@@ -1,8 +1,0 @@
-#!/bin/bash
-
-while true; do
-  if pg_ctl status | grep -q 'no server running'; then
-    pg_start;
-  fi
-  sleep 1
-done
