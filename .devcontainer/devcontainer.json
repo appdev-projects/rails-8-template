@@ -4,7 +4,7 @@
   "name": "Container",
   "dockerComposeFile": "docker-compose.yml", // Location of docker-compose.yml file
   "service": "devcontainer", // Where the image is specified in the docker-compose.yml
-  "workspaceFolder": "/workspaces/rails-8-template", // Where to mount the workspace folder
+  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}", // Where to mount the workspace folder
 
   // Container environment variables to ensure database connection works
   "containerEnv": {
@@ -34,6 +34,9 @@
   },
 
   "otherPortsAttributes": {"onAutoForward": "ignore"},
+
+  // Use 'initializeCommand' to run commands during initialization of container.
+  "initializeCommand": ".devcontainer/initialize.sh",
 
   // Use 'postCreateCommand' to run commands after the container is created.
   "postCreateCommand": "bin/setup && gem install rufo && gem install htmlbeautifier",
