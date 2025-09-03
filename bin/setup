@@ -33,4 +33,8 @@ FileUtils.chdir APP_ROOT do
 
   puts "\n== Checking for JavaScript tests and installing chromedriver if needed =="
   system! "bin/chromedriver_check"
+
+  puts "\n== Creating test database =="
+  system! "bin/rails db:create RAILS_ENV=test"
+  puts "\n== Initial setup complete =="
 end

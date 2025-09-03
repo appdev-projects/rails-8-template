@@ -2,8 +2,18 @@
 // README at: https://github.com/devcontainers/templates/tree/main/src/universal
 {
   "name": "Container",
-  // Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
-  "image": "firstdraft/appdev-rails-8-template",
+  "dockerComposeFile": "docker-compose.yml", // Location of docker-compose.yml file
+  "service": "devcontainer", // Where the image is specified in the docker-compose.yml
+  "workspaceFolder": "/workspaces/rails-8-template", // Where to mount the workspace folder
+
+  // Container environment variables to ensure database connection works
+  "containerEnv": {
+    "PGHOST": "localhost",
+    "PGUSER": "student",
+    "PGPASSWORD": "postgres",
+    "PGDATABASE": "postgres",
+    "DATABASE_URL": "postgres://student:postgres@localhost:5432/rails_8_template?encoding=utf8&pool=5&timeout=5000"
+  },
 
   // Features to add to the dev container. More info: https://containers.dev/features.
   // "features": {},

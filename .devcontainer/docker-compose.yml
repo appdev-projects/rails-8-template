@@ -1,0 +1,27 @@
+services:
+  devcontainer:
+    image: firstdraft/appdev-rails-8-template
+    volumes:
+      - ../..:/workspaces:cached
+    network_mode: service:db
+    command: sleep infinity
+
+  db:
+    image: postgres:16.9
+    restart: unless-stopped
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: student
+      POSTGRES_DB: postgres
+  
+  redis:
+    image: redis:latest
+    restart: unless-stopped
+    volumes:
+      - redis-data:/var/lib/redis/data
+
+volumes:
+  postgres-data:
+  redis-data:

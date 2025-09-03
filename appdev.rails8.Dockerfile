@@ -64,26 +64,6 @@ RUN /bin/bash -l -c "bundle config set --local path '/home/student/.bundle' && b
     && sudo apt-get update \
     && sudo apt-get install -y postgresql-16 postgresql-contrib-16
 
-# Setup PostgreSQL configuration
-ENV PATH="$PATH:/usr/lib/postgresql/16/bin" PGDATA="/workspaces/.pgsql/data"
-RUN sudo mkdir -p $PGDATA \
-    && mkdir -p ~/.pg_ctl/bin ~/.pg_ctl/sockets \
-    && printf '#!/bin/bash\n[ ! -d $PGDATA ] && mkdir -p $PGDATA && initdb -D $PGDATA\npg_ctl -D $PGDATA -l ~/.pg_ctl/log -o "-k ~/.pg_ctl/sockets" start\n' > ~/.pg_ctl/bin/pg_start \
-    && printf '#!/bin/bash\npg_ctl -D $PGDATA -l ~/.pg_ctl/log -o "-k ~/.pg_ctl/sockets" stop\n' > ~/.pg_ctl/bin/pg_stop \
-    && chmod +x ~/.pg_ctl/bin/* \
-    && sudo addgroup dev \
-    && sudo adduser student dev \
-    && sudo chgrp -R dev $PGDATA \
-    && sudo chmod -R 775 $PGDATA \
-    && sudo setfacl -dR -m g:staff:rwx $PGDATA \
-    && sudo chmod 777 /var/run/postgresql \
-    # This is a bit of a hack. At the moment we have no means of starting background
-    # tasks from a Dockerfile. This workaround checks, on each bashrc eval, if the
-    # PostgreSQL server is running, and if not starts it.
-    && printf "\n# Auto-start PostgreSQL server.\n[[ \$(pg_ctl status | grep PID) ]] || pg_start > /dev/null\n" >> ~/.bashrc
-ENV PATH="$PATH:$HOME/.pg_ctl/bin" PGHOSTADDR="127.0.0.1" PGDATABASE="postgres"
-
-
 RUN curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash - \
     # Install Node.js and Yarn
     && sudo apt-get install -y nodejs \
@@ -128,7 +108,6 @@ __git_complete g __git_main" >> ~/.bash_aliases \
     && echo "alias grade='rake grade'" >> ~/.bash_aliases \
     && echo "alias grade:reset_token='rake grade:reset_token'" >> ~/.bash_aliases \
     && echo 'export PATH="$PWD/bin:$PATH"' >> ~/.bashrc \
-    && echo "nohup /workspaces/*/bin/postgres-monitor > /dev/null 2>&1 &" >> ~/.bashrc \
     && echo "# Configure bundler and RVM paths" >> ~/.bashrc \
     && echo 'export BUNDLE_PATH="/home/student/.bundle"' >> ~/.bashrc \
     && echo 'export GEM_HOME="/home/student/.rvm/gems/ruby-3.4.1"' >> ~/.bashrc \
