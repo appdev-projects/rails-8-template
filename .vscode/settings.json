@@ -1,5 +1,8 @@
 {
   "chat.disableAIFeatures": true,
+  "github.copilot.enable": false,
+  "github.copilot.inlineSuggest.enable": false,
+  "github.copilot.editor.enableAutoCompletions": false,
   "editor.tabSize": 2,
   "editor.acceptSuggestionOnEnter": "off",
   "editor.bracketPairColorization.enabled": false,
