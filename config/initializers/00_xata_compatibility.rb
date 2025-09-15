@@ -8,7 +8,7 @@ if ENV["DATABASE_URL"]&.include?("xata.sh")
     module XataExtensionPrevention
       def enable_extension(name, **)
         Rails.logger&.info "Skipping extension '#{name}' - Xata has it enabled by default"
-        return
+        nil
       end
     end
 
