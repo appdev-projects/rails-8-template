@@ -75,6 +75,8 @@ RUN curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash - \
     && sudo n 18 \
     && hash -r \
     && sudo rm -rf /var/lib/apt/lists/* \
+    # Create python symlink
+    && sudo ln -s /usr/bin/python3 /usr/bin/python \
     # Add thoughtbot style bash prompt
     &&  sudo wget -qO ./prompt "https://gist.githubusercontent.com/jelaniwoods/7e5db8d72b3dfac257b7eb562cfebf11/raw/af43083d91c0eb1489059a2ad9c39474a34ddbda/thoughtbot-style-prompt" \
     && /bin/bash -l -c "cat ./prompt >> ~/.bashrc" \
