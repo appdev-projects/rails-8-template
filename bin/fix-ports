@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+# Script to fix port 502 issues
+
+gh codespace ports visibility 3000:public -c $CODESPACE_NAME > /dev/null 2>&1
+
+gh codespace ports visibility 3000:private -c $CODESPACE_NAME > /dev/null 2>&1
+
+clear
