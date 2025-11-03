@@ -2,4 +2,4 @@
 
 For your AppDev Projects!
 
-Some rights reserved — see [LICENSE.txt](LICENSE.txt)
+All files are covered by the MIT license, see [LICENSE.txt](LICENSE.txt).
