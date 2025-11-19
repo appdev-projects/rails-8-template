@@ -591,7 +591,7 @@ PLATFORMS
 
 DEPENDENCIES
   active_link_to
-  ai-chat (~> 0.3.2)
+  ai-chat
   annotaterb
   appdev_support
   awesome_print
