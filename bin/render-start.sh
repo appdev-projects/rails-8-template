@@ -3,4 +3,4 @@
 set -o errexit
 
 # Ruby on Rails
-bundle exec rails server
+exec bundle exec rails server -e "${RAILS_ENV:-production}" -b 0.0.0.0 -p "${PORT:-3000}"

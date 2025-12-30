@@ -59,14 +59,9 @@ end
 # Additional gems for AppDev
 gem "active_link_to"
 gem "ai-chat"
-gem "appdev_support"
-gem "awesome_print"
 gem "devise"
-gem "dotenv"
 gem "carrierwave"
 gem "cloudinary"
-gem "faker"
-gem "htmlbeautifier"
 gem "http"
 gem "kaminari"
 gem "pagy"
@@ -76,6 +71,14 @@ gem "rollbar"
 gem "simple_form"
 gem "strip_attributes"
 gem "validate_url"
+
+group :development, :test do
+  gem "appdev_support"
+  gem "awesome_print"
+  gem "dotenv"
+  gem "faker"
+  gem "htmlbeautifier"
+end
 
 group :development do
   gem "annotaterb"

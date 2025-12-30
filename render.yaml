@@ -6,13 +6,26 @@ services:
     buildCommand: "./bin/render-build.sh" # we already created these two files for you
     startCommand: "./bin/render-start.sh"
     envVars: # this section sets some ENV variables needed by Render for deployment
+      # Render does not guarantee Rails defaults to production mode, so set it explicitly.
+      - key: RAILS_ENV
+        value: production
+      - key: RACK_ENV
+        value: production
       - key: SECRET_KEY_BASE
         generateValue: true
       - key: DATABASE_URL
         sync: false
+      # Keep thread + DB pool counts small to reduce memory usage.
+      - key: RAILS_MAX_THREADS
+        value: 3
       - key: WEB_CONCURRENCY
         value: 1
       - key: MALLOC_ARENA_MAX
         value: 2
+      # Don't install development/test gems on Render.
+      - key: BUNDLE_WITHOUT
+        value: "development:test"
+      # On Render free plans, running Solid Queue *inside* Puma can push the service over memory limits.
+      # However, we optimize memory elsewhere (WEB_CONCURRENCY=1, DB consolidation) to allow running it safely here.
       - key: SOLID_QUEUE_IN_PUMA
         value: true
