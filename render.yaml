@@ -11,4 +11,8 @@ services:
       - key: DATABASE_URL
         sync: false
       - key: WEB_CONCURRENCY
+        value: 1
+      - key: MALLOC_ARENA_MAX
         value: 2
+      - key: SOLID_QUEUE_IN_PUMA
+        value: true
