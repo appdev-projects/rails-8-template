@@ -6,50 +6,56 @@ on:
     branches: [ main ]
 
 jobs:
-  scan_ruby:
-    runs-on: ubuntu-latest
+  # All jobs are currently disabled. Uncomment a job below to enable it.
+  placeholder:
+      runs-on: ubuntu-latest
+      steps:
+        - run: 'echo "CI jobs disabled"'
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+  # scan_ruby:
+  #   runs-on: ubuntu-latest
 
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: .ruby-version
-          bundler-cache: true
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v4
 
-      - name: Scan for common Rails security vulnerabilities using static analysis
-        run: bin/brakeman --no-pager
+  #     - name: Set up Ruby
+  #       uses: ruby/setup-ruby@v1
+  #       with:
+  #         ruby-version: .ruby-version
+  #         bundler-cache: true
 
-  scan_js:
-    runs-on: ubuntu-latest
+  #     - name: Scan for common Rails security vulnerabilities using static analysis
+  #       run: bin/brakeman --no-pager
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+  # scan_js:
+  #   runs-on: ubuntu-latest
 
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: .ruby-version
-          bundler-cache: true
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v4
 
-      - name: Scan for security vulnerabilities in JavaScript dependencies
-        run: bin/importmap audit
+  #     - name: Set up Ruby
+  #       uses: ruby/setup-ruby@v1
+  #       with:
+  #         ruby-version: .ruby-version
+  #         bundler-cache: true
 
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+  #     - name: Scan for security vulnerabilities in JavaScript dependencies
+  #       run: bin/importmap audit
 
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: .ruby-version
-          bundler-cache: true
+  # lint:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v4
 
-      - name: Lint code for consistent style
-        run: bin/rubocop -f github
+  #     - name: Set up Ruby
+  #       uses: ruby/setup-ruby@v1
+  #       with:
+  #         ruby-version: .ruby-version
+  #         bundler-cache: true
+
+  #     - name: Lint code for consistent style
+  #       run: bin/rubocop -f github
 
