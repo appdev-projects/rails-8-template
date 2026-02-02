@@ -58,7 +58,6 @@ end
 
 # Additional gems for AppDev
 gem "active_link_to"
-gem "ai-chat", "~> 0.5.1"
 gem "appdev_support"
 gem "awesome_print"
 gem "devise"
