@@ -17,7 +17,7 @@ default: &default
   encoding: unicode
   # For details on connection pooling, see Rails configuration guide
   # https://guides.rubyonrails.org/configuring.html#database-pooling
-  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  pool: <%= ENV.fetch("DB_POOL") { 5 } %>
 
 
 development:
@@ -82,16 +82,13 @@ production:
   primary: &primary_production
     <<: *default
     url: <%= ENV["DATABASE_URL"] %>
-    encoding: utf8
+  # Share the same database for cache, queue, and cable (saves connections/memory)
   cache:
     <<: *primary_production
-    database: database_production_cache
     migrations_paths: db/cache_migrate
   queue:
     <<: *primary_production
-    database: database_production_queue
     migrations_paths: db/queue_migrate
   cable:
     <<: *primary_production
-    database: database_production_cable
     migrations_paths: db/cable_migrate

@@ -1,6 +1,6 @@
 services:
   devcontainer:
-    image: firstdraft/appdev-rails-8-template
+    image: firstdraft/appdev-rails-8-phase1
     volumes:
       - ../..:/workspaces:cached
     network_mode: service:db
