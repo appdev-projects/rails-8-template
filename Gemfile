@@ -54,7 +54,7 @@ gem "ransack"                         # Search and filtering
 gem "dotenv"                          # Load environment variables from .env
 gem "http"                            # Simple HTTP client for APIs
 gem "rollbar"                         # Error tracking in production
-gem "appdev_support", "~> 0.2.1"      # Learning helpers (nicer error messages, etc.)
+gem "appdev_support"                  # Learning helpers (nicer error messages, etc.)
 
 # ==============================================================================
 # Feature Gems - AI
