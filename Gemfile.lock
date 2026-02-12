@@ -171,7 +171,7 @@ GEM
       raabro (~> 1.4)
     globalid (1.2.1)
       activesupport (>= 6.1)
-    grade_runner (0.0.14)
+    grade_runner (0.0.15)
       activesupport (>= 2.3.5)
       faraday-retry (~> 1.0.3)
       octokit (~> 5.0)
@@ -508,7 +508,7 @@ DEPENDENCIES
   devise
   dotenv
   draft_generators (~> 0.0.5)
-  grade_runner (~> 0.0.14)
+  grade_runner (~> 0.0.15)
   haikunator
   htmlbeautifier
   http
