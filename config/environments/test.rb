@@ -16,11 +16,13 @@ Rails.application.configure do
   config.eager_load = ENV["CI"].present?
 
   # Configure CarrierWave for testing
-  CarrierWave.configure do |config|
-    config.storage = :file
-    config.enable_processing = false
-    config.root = Rails.root.join("tmp")
-    config.cache_dir = Rails.root.join("tmp/carrierwave")
+  if defined?(CarrierWave)
+    CarrierWave.configure do |config|
+      config.storage = :file
+      config.enable_processing = false
+      config.root = Rails.root.join("tmp")
+      config.cache_dir = Rails.root.join("tmp/carrierwave")
+    end
   end
 
   # Configure public file server for tests with cache-control for performance.
