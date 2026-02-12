@@ -13,7 +13,6 @@ gem "solid_cable"                     # Database-backed Action Cable
 gem "bootsnap", require: false        # Faster boot times via caching
 gem "thruster", require: false        # HTTP caching/compression for Puma
 gem "tzinfo-data", platforms: %i[windows jruby] # Timezone data for Windows/JRuby
-gem "cloudinary"                      # Cloud image storage and CDN
 gem "faker"                           # Generate fake data for testing/seeds
 gem "kaminari"                        # Pagination
 gem "pagy"                            # Alternative pagination (faster)
