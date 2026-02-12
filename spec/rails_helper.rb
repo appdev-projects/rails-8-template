@@ -38,8 +38,11 @@ RSpec.configure do |config|
   RSpec::Expectations.configuration.on_potential_false_positives = :nothing
 
   # Devise sign in helpers
-  config.include Devise::Test::ControllerHelpers, type: :controller
-  config.include Devise::Test::ControllerHelpers, type: :view
+  if defined?(Devise::Test::ControllerHelpers)
+    config.include Devise::Test::ControllerHelpers, type: :controller
+    config.include Devise::Test::ControllerHelpers, type: :view
+  end
+
   # Rails 8 issue: https://github.com/heartcombo/devise/issues/5705
   config.before(:each, type: :controller) do
     Rails.application.reload_routes_unless_loaded
