@@ -519,7 +519,6 @@ DEPENDENCIES
   cloudinary
   debug
   dev_toolbar (~> 2.1.0)
-  devise
   dotenv
   draft_generators (~> 0.0.5)
   faker
