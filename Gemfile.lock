@@ -503,7 +503,6 @@ DEPENDENCIES
   rails-controller-testing
   rails-erd
   rails_db (~> 2.5.0)
-  ransack
   rollbar
   rspec-html-matchers
   rspec-rails (~> 7.1.1)
