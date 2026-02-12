@@ -171,11 +171,12 @@ GEM
       raabro (~> 1.4)
     globalid (1.2.1)
       activesupport (>= 6.1)
-    grade_runner (0.0.13)
+    grade_runner (0.0.14)
       activesupport (>= 2.3.5)
       faraday-retry (~> 1.0.3)
       octokit (~> 5.0)
       oj (~> 3.13.12)
+      ostruct
       rake (~> 13)
       zip
     haikunator (1.1.1)
@@ -276,6 +277,7 @@ GEM
       cgi
       connection_pool
     orm_adapter (0.5.0)
+    ostruct (0.6.3)
     pg (1.5.9)
     pp (0.6.2)
       prettyprint
@@ -506,7 +508,7 @@ DEPENDENCIES
   devise
   dotenv
   draft_generators (~> 0.0.5)
-  grade_runner (~> 0.0.13)
+  grade_runner (~> 0.0.14)
   haikunator
   htmlbeautifier
   http
