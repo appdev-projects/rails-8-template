@@ -13,7 +13,6 @@ gem "solid_cable"                     # Database-backed Action Cable
 gem "bootsnap", require: false        # Faster boot times via caching
 gem "thruster", require: false        # HTTP caching/compression for Puma
 gem "tzinfo-data", platforms: %i[windows jruby] # Timezone data for Windows/JRuby
-gem "kaminari"                        # Pagination
 gem "pagy"                            # Alternative pagination (faster)
 gem "ransack"                         # Search and filtering
 gem "dotenv"                          # Load environment variables from .env
