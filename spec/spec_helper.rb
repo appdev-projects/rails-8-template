@@ -24,6 +24,14 @@ require "grade_runner/formatters/hint_formatter"
 # it.
 #
 # See https://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
+if defined?(CarrierWave)
+  require "carrierwave"
+  CarrierWave.configure do |config|
+    config.storage = :file
+    config.enable_processing = false
+  end
+end
+
 RSpec.configure do |config|
   config.include RSpecHtmlMatchers
   config.example_status_persistence_file_path = "examples.txt"
