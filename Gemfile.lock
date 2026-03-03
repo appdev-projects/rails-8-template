@@ -139,7 +139,8 @@ GEM
       logger
     faraday-net_http (3.4.0)
       net-http (>= 0.5.0)
-    faraday-retry (1.0.3)
+    faraday-retry (2.4.0)
+      faraday (~> 2.0)
     ffi (1.17.1-aarch64-linux-gnu)
     ffi (1.17.1-aarch64-linux-musl)
     ffi (1.17.1-arm-linux-gnu)
@@ -156,9 +157,9 @@ GEM
       raabro (~> 1.4)
     globalid (1.2.1)
       activesupport (>= 6.1)
-    grade_runner (0.0.15)
+    grade_runner (0.0.16)
       activesupport (>= 2.3.5)
-      faraday-retry (~> 1.0.3)
+      faraday-retry (~> 2.0)
       octokit (~> 5.0)
       oj (~> 3.13.12)
       ostruct
@@ -474,7 +475,7 @@ DEPENDENCIES
   dev_toolbar (~> 2.1.0)
   dotenv
   draft_generators (~> 0.0.5)
-  grade_runner (~> 0.0.15)
+  grade_runner (~> 0.0.16)
   haikunator
   htmlbeautifier
   http
