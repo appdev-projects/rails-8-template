@@ -42,22 +42,31 @@ RUN sudo mkdir -p $HOME \
     && curl -sSL https://rvm.io/pkuczynski.asc | gpg --import - \
     && curl -fsSL https://get.rvm.io | bash -s stable \
     && bash -lc " \
-        rvm requirements \
-        && rvm install 3.4.1 \
-        && rvm use 3.4.1 --default \
+        rvm get head \
+        && rvm requirements \
+        && rvm install 4.0.1 \
+        && rvm use 4.0.1 --default \
         && rvm rubygems current \
-        && gem install bundler:2.6.5 --no-document" \
+        && gem install bundler --no-document" \
+    && rm -rf /home/student/.rvm/src/ /home/student/.rvm/archives/ /home/student/.rvm/log/ \
     && echo '[[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm" # Load RVM into a shell session *as a function*' >> /home/student/.bashrc.d/70-ruby && echo "rvm_gems_path=/home/student/.rvm" > ~/.rvmrc
 
-ENV GEM_HOME=/home/student/.rvm/gems/ruby-3.4.1:/workspaces/.rvm \
-    GEM_PATH=/home/student/.rvm/gems/ruby-3.4.1:/home/student/.rvm/gems/ruby-3.4.1@global \
-    PATH=/home/student/.rvm/gems/ruby-3.4.1/bin:/home/student/.rvm/gems/ruby-3.4.1@global/bin:/home/student/.rvm/rubies/ruby-3.4.1/bin:/home/student/.rvm/bin:/workspaces/.rvm/bin:$PATH
+# Note: .bundle/ruby/ uses Ruby's ABI version (4.0.0), not the patch version (4.0.1)
+ENV GEM_HOME=/home/student/.rvm/gems/ruby-4.0.1:/workspaces/.rvm \
+    GEM_PATH=/home/student/.bundle/ruby/4.0.0:/home/student/.rvm/gems/ruby-4.0.1:/home/student/.rvm/gems/ruby-4.0.1@global \
+    PATH=/home/student/.bundle/ruby/4.0.0/bin:/home/student/.rvm/gems/ruby-4.0.1/bin:/home/student/.rvm/gems/ruby-4.0.1@global/bin:/home/student/.rvm/rubies/ruby-4.0.1/bin:/home/student/.rvm/bin:/workspaces/.rvm/bin:$PATH
 
 WORKDIR /rails-template
 
 # Pre-install gems into /rails-template/gems/
 COPY --chown=student:student Gemfile Gemfile.lock /rails-template/
 RUN /bin/bash -l -c "bundle config set --local path '/home/student/.bundle' && bundle install" \
+    # Remove rdoc's RubyGems plugin from BUNDLE_PATH to prevent duplicate loading.
+    # rdoc is already a Ruby default gem; having a second copy in BUNDLE_PATH (via GEM_PATH)
+    # causes constant redefinition warnings during 'gem install'. The gem dir + spec stay
+    # so bundler considers it installed and won't reinstall at Codespace startup.
+    && rm -f /home/student/.bundle/ruby/4.0.0/plugins/rdoc_plugin.rb \
+    && rm -f /home/student/.bundle/ruby/4.0.0/gems/rdoc-*/lib/rubygems_plugin.rb \
     # Install postgresql 16
     && sudo sh -c 'echo "deb https://apt-archive.postgresql.org/pub/repos/apt focal-pgdg main" > /etc/apt/sources.list.d/pgdg.list' \
     && wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add - \
@@ -113,8 +122,8 @@ __git_complete g __git_main" >> ~/.bash_aliases \
     && echo "alias be='bundle exec'" >> ~/.bash_aliases \
     && echo "alias grade='rake grade'" >> ~/.bash_aliases \
     && echo "alias grade:reset_token='rake grade:reset_token'" >> ~/.bash_aliases \
-    && echo 'export PATH="$PWD/bin:$PATH"' >> ~/.bashrc \
+    && echo 'export PATH="$PWD/bin:/home/student/.bundle/ruby/4.0.0/bin:$PATH"' >> ~/.bashrc \
     && echo "# Configure bundler and RVM paths" >> ~/.bashrc \
     && echo 'export BUNDLE_PATH="/home/student/.bundle"' >> ~/.bashrc \
-    && echo 'export GEM_HOME="/home/student/.rvm/gems/ruby-3.4.1"' >> ~/.bashrc \
-    && echo 'export GEM_PATH="/home/student/.rvm/gems/ruby-3.4.1:/home/student/.rvm/gems/ruby-3.4.1@global"' >> ~/.bashrc
+    && echo 'export GEM_HOME="/home/student/.rvm/gems/ruby-4.0.1"' >> ~/.bashrc \
+    && echo 'export GEM_PATH="/home/student/.bundle/ruby/4.0.0:/home/student/.rvm/gems/ruby-4.0.1:/home/student/.rvm/gems/ruby-4.0.1@global"' >> ~/.bashrc
