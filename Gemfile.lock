@@ -101,6 +101,7 @@ GEM
       rack-test (>= 0.6.3)
       regexp_parser (>= 1.5, < 3.0)
       xpath (~> 3.2)
+    cgi (0.5.1)
     choice (0.2.0)
     coderay (1.1.3)
     concurrent-ruby (1.3.5)
@@ -471,6 +472,7 @@ DEPENDENCIES
   binding_of_caller
   bootsnap
   capybara
+  cgi
   debug
   dev_toolbar (~> 2.1.0)
   dotenv
