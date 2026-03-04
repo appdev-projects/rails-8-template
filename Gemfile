@@ -47,6 +47,6 @@ group :test do
   gem "rails-controller-testing"      # Controller test helpers
   gem "rspec-html-matchers"           # HTML matchers for tests
   gem "selenium-webdriver", "~> 4.41" # Browser automation
-  gem "shoulda-matchers", "~> 6.4"    # One-liner tests for common patterns
+  gem "shoulda-matchers", "~> 7.0" # One-liner tests for common patterns
   gem "webmock"                       # Mock HTTP requests in tests
 end
