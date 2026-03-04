@@ -22,7 +22,7 @@ gem "tsort" # Required for Ruby 4.0+ (moving out of default gems)
 
 group :development, :test do
   gem "debug", platforms: %i[mri windows], require: "debug/prelude" # Ruby debugger
-  gem "rspec-rails", "~> 7.1.1"       # Testing framework
+  gem "rspec-rails", "~> 8.0" # Testing framework
   gem "grade_runner", "~> 0.0.16" # Automated grading
 end
 
