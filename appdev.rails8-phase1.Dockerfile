@@ -47,8 +47,7 @@ RUN sudo mkdir -p $HOME \
         && rvm install 4.0.1 \
         && rvm use 4.0.1 --default \
         && rvm rubygems current \
-        && gem install bundler --no-document \
-        && gem install bundler -v '2.6.5' --no-document" \
+        && gem install bundler --no-document" \
     && rm -rf /home/student/.rvm/src/ /home/student/.rvm/archives/ /home/student/.rvm/log/ \
     && echo '[[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm" # Load RVM into a shell session *as a function*' >> /home/student/.bashrc.d/70-ruby && echo "rvm_gems_path=/home/student/.rvm" > ~/.rvmrc
 
