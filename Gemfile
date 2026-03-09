@@ -40,6 +40,7 @@ group :development do
   gem "rails-erd"                     # Generate ER diagrams
   gem "rufo"                          # Ruby code formatter
   gem "web-console"                   # Console on exception pages
+  gem "pry", "~> 0.16" # Interactive Ruby shell
 end
 
 group :test do
