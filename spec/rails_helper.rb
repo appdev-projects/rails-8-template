@@ -50,6 +50,7 @@ RSpec.configure do |config|
 
   # Shoulda matchers for association accessor specs
   config.include(Shoulda::Matchers::ActiveRecord, type: :model)
+  config.include(Shoulda::Matchers::ActiveModel, type: :model)
 
   # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
   config.fixture_paths = [ "#{::Rails.root}/spec/fixtures" ]
