@@ -24,6 +24,7 @@ group :development, :test do
   gem "debug", platforms: %i[mri windows], require: "debug/prelude" # Ruby debugger
   gem "rspec-rails", "~> 8.0" # Testing framework
   gem "grade_runner", "~> 0.0.16" # Automated grading
+  gem "rubocop", ">= 1.86" # Linting and code style enforcement
 end
 
 group :development do
