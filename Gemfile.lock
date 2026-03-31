@@ -531,6 +531,7 @@ DEPENDENCIES
   htmlbeautifier
   http
   importmap-rails
+  minitest
   pg (~> 1.1)
   propshaft
   pry (~> 0.16)
