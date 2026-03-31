@@ -126,4 +126,5 @@ __git_complete g __git_main" >> ~/.bash_aliases \
     && echo "# Configure bundler and RVM paths" >> ~/.bashrc \
     && echo 'export BUNDLE_PATH="/home/student/.bundle"' >> ~/.bashrc \
     && echo 'export GEM_HOME="/home/student/.rvm/gems/ruby-4.0.1"' >> ~/.bashrc \
-    && echo 'export GEM_PATH="/home/student/.bundle/ruby/4.0.0:/home/student/.rvm/gems/ruby-4.0.1:/home/student/.rvm/gems/ruby-4.0.1@global"' >> ~/.bashrc
+    && echo 'export GEM_PATH="/home/student/.bundle/ruby/4.0.0:/home/student/.rvm/gems/ruby-4.0.1:/home/student/.rvm/gems/ruby-4.0.1@global"' >> ~/.bashrc \
+    && echo 'export RUBYOPT="-rbundler/setup"' >> ~/.bashrc
