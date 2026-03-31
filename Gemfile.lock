@@ -540,6 +540,7 @@ DEPENDENCIES
   rails-controller-testing
   rails-erd
   rails_db (~> 2.5.0)
+  rake (~> 13.0)
   rollbar
   rspec-html-matchers
   rspec-rails (~> 8.0)
