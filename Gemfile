@@ -19,6 +19,7 @@ gem "rollbar"                         # Error tracking in production
 gem "appdev_support"                  # Learning helpers (nicer error messages, etc.)
 gem "cgi" # Required for Ruby 4.0+ (removed from stdlib)
 gem "tsort" # Required for Ruby 4.0+ (moving out of default gems)
+gem "base64", ">= 0.3.0" # Required for Ruby 4.0+ (moving out of default gems)
 
 group :development, :test do
   gem "debug", platforms: %i[mri windows], require: "debug/prelude" # Ruby debugger
