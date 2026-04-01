@@ -32,6 +32,14 @@ if defined?(CarrierWave)
   end
 end
 
+# setup for Exchange Rates API testing
+if defined?(WebMock) &&
+    defined?(HTTP::VERSION) &&
+    File.exist?(File.expand_path("../support/currency_symbols.json", __FILE__)) &&
+    File.exist?(File.expand_path("../support/cup_to_svc.json", __FILE__))
+  require "#{File.expand_path("../support/api_stubs", __FILE__)}"
+end
+
 RSpec.configure do |config|
   config.include RSpecHtmlMatchers
   config.example_status_persistence_file_path = "examples.txt"
