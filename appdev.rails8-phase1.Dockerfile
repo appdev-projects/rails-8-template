@@ -120,11 +120,12 @@ source /usr/share/bash-completion/completions/git\n\
 __git_complete g __git_main" >> ~/.bash_aliases \
     # Add other aliases
     && echo "alias be='bundle exec'" >> ~/.bash_aliases \
+    && echo "alias rspec='bundle exec rspec'" >> ~/.bash_aliases \
+    && echo "alias rubocop='bundle exec rubocop'" >> ~/.bash_aliases \
     && echo "alias grade='rake grade'" >> ~/.bash_aliases \
     && echo "alias grade:reset_token='rake grade:reset_token'" >> ~/.bash_aliases \
     && echo 'export PATH="$PWD/bin:/home/student/.bundle/ruby/4.0.0/bin:$PATH"' >> ~/.bashrc \
     && echo "# Configure bundler and RVM paths" >> ~/.bashrc \
     && echo 'export BUNDLE_PATH="/home/student/.bundle"' >> ~/.bashrc \
     && echo 'export GEM_HOME="/home/student/.rvm/gems/ruby-4.0.1"' >> ~/.bashrc \
-    && echo 'export GEM_PATH="/home/student/.bundle/ruby/4.0.0:/home/student/.rvm/gems/ruby-4.0.1:/home/student/.rvm/gems/ruby-4.0.1@global"' >> ~/.bashrc \
-    && echo 'export RUBYOPT="-rbundler/setup"' >> ~/.bashrc
+    && echo 'export GEM_PATH="/home/student/.bundle/ruby/4.0.0:/home/student/.rvm/gems/ruby-4.0.1:/home/student/.rvm/gems/ruby-4.0.1@global"' >> ~/.bashrc
