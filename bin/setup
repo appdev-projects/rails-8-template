@@ -18,7 +18,13 @@ FileUtils.chdir APP_ROOT do
     ENV["BUNDLE_PATH"] ||= "/home/student/.bundle"
     system("bundle config get path") # Debug output to see the bundle path
   end
-  system("bundle check") || system!("bundle install")
+  unless system("bundle check")
+    unless system("bundle install")
+      puts "\n== bundle install failed; removing stale Gemfile.lock and re-resolving =="
+      FileUtils.rm_f("Gemfile.lock")
+      system!("bundle install")
+    end
+  end
 
   # puts "\n== Copying sample files =="
   # unless File.exist?("config/database.yml")
