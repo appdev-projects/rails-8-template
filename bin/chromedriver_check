@@ -24,8 +24,12 @@ def chromedriver_installed?
   system("which chromedriver > /dev/null 2>&1")
 end
 
+def everyday_rspec_codespace?
+  ENV["GITHUB_REPOSITORY"].to_s.end_with?("/everyday-rspec")
+end
+
 # First, check if we need chromedriver for our tests
-if check_for_js_tests
+if check_for_js_tests || everyday_rspec_codespace?
   # Next, check if chromedriver is already installed
   if chromedriver_installed?
     puts "\n== JavaScript tests found, but chromedriver is already installed. Skipping installation. =="

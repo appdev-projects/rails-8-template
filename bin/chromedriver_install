@@ -15,5 +15,5 @@ sudo mkdir -p "$CHROME_PATH" "$CHROMEDRIVER_PATH"
 echo "y" | sudo npx @puppeteer/browsers install chrome@${CHROME_DRIVER_VERSION} --install-deps --path="$CHROME_PATH"
 echo "y" | sudo npx @puppeteer/browsers install chromedriver@${CHROME_DRIVER_VERSION} --path="$CHROMEDRIVER_PATH"
 
-sudo ln -sf ${CHROME_PATH}/linux-${CHROME_DRIVER_VERSION}/chrome-linux64/chrome /usr/local/bin/google-chrome
-sudo ln -sf ${CHROMEDRIVER_PATH}/linux-${CHROME_DRIVER_VERSION}/chromedriver-linux64/chromedriver /usr/local/bin/chromedriver
+sudo ln -sf ${CHROME_PATH}/chrome/linux-${CHROME_DRIVER_VERSION}/chrome-linux64/chrome /usr/local/bin/google-chrome
+sudo ln -sf ${CHROMEDRIVER_PATH}/chromedriver/linux-${CHROME_DRIVER_VERSION}/chromedriver-linux64/chromedriver /usr/local/bin/chromedriver
