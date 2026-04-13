@@ -10,3 +10,9 @@
  */
 
 @import "custom-image.css";
+
+/* Bootstrap sets scroll-behavior: smooth on :root, which
+   interferes with Turbo's scroll preservation during morphs. */
+:root {
+  scroll-behavior: auto !important;
+}
