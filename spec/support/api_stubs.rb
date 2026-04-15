@@ -12,12 +12,20 @@ RSpec.configure do |config|
       with(headers: { "Connection" => "close", "Host" => "api.exchangerate.host", "User-Agent" => "http.rb/#{HTTP::VERSION}" }).
       to_return(status: 200, body: api_response, headers: { "Content-Type" => "application/json" })
 
+    stub_request(:get, /prepend.me\/api.exchangerate.host\/list/).
+      with(headers: { "Connection" => "close", "Host" => "prepend.me", "User-Agent" => "http.rb/#{HTTP::VERSION}" }).
+      to_return(status: 200, body: api_response, headers: { "Content-Type" => "application/json" })
+
     stub_request(:get, /api.exchangerate.host\/live/).
       with(headers: { "Accept" => "*/*", "User-Agent" => "Ruby" }).
       to_return(status: 200, body: api_response, headers: { "Content-Type" => "application/json" })
 
     stub_request(:get, /api.exchangerate.host\/live/).
       with(headers: { "Connection" => "close", "Host" => "api.exchangerate.host", "User-Agent" => "http.rb/#{HTTP::VERSION}" }).
+      to_return(status: 200, body: api_response, headers: { "Content-Type" => "application/json" })
+
+    stub_request(:get, /prepend.me\/api.exchangerate.host\/live/).
+      with(headers: { "Connection" => "close", "Host" => "prepend.me", "User-Agent" => "http.rb/#{HTTP::VERSION}" }).
       to_return(status: 200, body: api_response, headers: { "Content-Type" => "application/json" })
   end
 end
@@ -40,6 +48,14 @@ RSpec.configure do |config|
 
     stub_request(:get, /api.exchangerate.host\/latest/).
       with(headers: { "Connection" => "close", "Host" => "api.exchangerate.host", "User-Agent" => "http.rb/#{HTTP::VERSION}" }).
+      to_return(status: 200, body: cup_to_svc, headers: { "Content-Type" => "application/json" })
+
+    stub_request(:get, /prepend.me\/api.exchangerate.host\/convert/).
+      with(headers: { "Connection" => "close", "Host" => "prepend.me", "User-Agent" => "http.rb/#{HTTP::VERSION}" }).
+      to_return(status: 200, body: cup_to_svc, headers: { "Content-Type" => "application/json" })
+
+    stub_request(:get, /prepend.me\/api.exchangerate.host\/latest/).
+      with(headers: { "Connection" => "close", "Host" => "prepend.me", "User-Agent" => "http.rb/#{HTTP::VERSION}" }).
       to_return(status: 200, body: cup_to_svc, headers: { "Content-Type" => "application/json" })
   end
 end
