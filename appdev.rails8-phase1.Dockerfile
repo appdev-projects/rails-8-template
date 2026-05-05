@@ -2,8 +2,7 @@ FROM ubuntu:focal
 
 ### base ###
 ENV DEBIAN_FRONTEND=noninteractive LANG=en_US.UTF-8
-RUN sed -i 's|http://archive.ubuntu.com|http://azure.archive.ubuntu.com|g; s|http://security.ubuntu.com|http://azure.archive.ubuntu.com|g' /etc/apt/sources.list \
-    && yes | unminimize \
+RUN yes | unminimize \
     && apt-get install -yq \
         curl \
         wget \
