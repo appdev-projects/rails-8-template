@@ -22,6 +22,7 @@ default: &default
 
 development:
   <<: *default
+  database: <%= Rails.application.class.module_parent_name.underscore %>_development
   url: <%= ENV.fetch("DATABASE_URL", nil)&.gsub("?", "_development?") %>
 
   # The specified database role being used to connect to PostgreSQL.
@@ -56,6 +57,7 @@ development:
 # Do not set this db to the same as development or production.
 test:
   <<: *default
+  database: <%= Rails.application.class.module_parent_name.underscore %>_test
   url: <%= ENV.fetch("DATABASE_URL", nil)&.gsub("?", "_test?") %>
 
 # As with config/credentials.yml, you never want to store sensitive information,

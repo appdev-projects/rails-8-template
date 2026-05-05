@@ -2,7 +2,8 @@ FROM ubuntu:focal
 
 ### base ###
 ENV DEBIAN_FRONTEND=noninteractive LANG=en_US.UTF-8
-RUN yes | unminimize \
+RUN sed -i 's|http://archive.ubuntu.com|http://azure.archive.ubuntu.com|g; s|http://security.ubuntu.com|http://azure.archive.ubuntu.com|g' /etc/apt/sources.list \
+    && yes | unminimize \
     && apt-get install -yq \
         curl \
         wget \
@@ -20,6 +21,18 @@ RUN yes | unminimize \
         graphviz=2.42.2-3build2 \
         psmisc \
         redis-server=5:5.0.7-2ubuntu0.1 \
+        libasound2 \
+        libatk-bridge2.0-0 \
+        libatk1.0-0 \
+        libatspi2.0-0 \
+        libgbm1 \
+        libnspr4 \
+        libnss3 \
+        libxcomposite1 \
+        libxdamage1 \
+        libxfixes3 \
+        libxkbcommon0 \
+        libxrandr2 \
     && locale-gen en_US.UTF-8 \
     && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* \
     # Container user

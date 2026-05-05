@@ -1,19 +1,24 @@
 #!/usr/bin/env bash
-# Script to install Chrome and matching chromedriver at the system level for Linux
-# This script is called by chromedriver_check when JS tests are detected
+# Script to install chrome-headless-shell + matching chromedriver at the system
+# level for Linux. Called from .devcontainer/devcontainer.json's postCreateCommand.
+#
+# Why chrome-headless-shell instead of full Chrome:
+#   Full Chrome needs GTK/X11 libs (libgtk-3-0, libatk-bridge2.0-0, etc.) whose
+#   required versions live in focal-security, which codespaces can't reliably
+#   reach. That made the previous --install-deps approach flaky. The headless
+#   shell is a slimmer headless-only Chrome variant with far fewer system-lib
+#   deps, so we can skip apt-get entirely. Our Capybara config already runs
+#   --headless, so we lose nothing.
 
 set -euo pipefail
 
-sudo apt-get update -y
-
-CHROME_DRIVER_VERSION=128.0.6613.137
-CHROME_PATH="/usr/local/chrome"
+CHROME_VERSION=148.0.7778.97
+CHROME_HEADLESS_PATH="/usr/local/chrome-headless-shell"
 CHROMEDRIVER_PATH="/usr/local/chromedriver"
-sudo mkdir -p "$CHROME_PATH" "$CHROMEDRIVER_PATH"
+sudo mkdir -p "$CHROME_HEADLESS_PATH" "$CHROMEDRIVER_PATH"
 
-# Install Chrome and Chromedriver
-echo "y" | sudo npx @puppeteer/browsers install chrome@${CHROME_DRIVER_VERSION} --install-deps --path="$CHROME_PATH"
-echo "y" | sudo npx @puppeteer/browsers install chromedriver@${CHROME_DRIVER_VERSION} --path="$CHROMEDRIVER_PATH"
+sudo npx -y @puppeteer/browsers install chrome-headless-shell@${CHROME_VERSION} --path="$CHROME_HEADLESS_PATH"
+sudo npx -y @puppeteer/browsers install chromedriver@${CHROME_VERSION} --path="$CHROMEDRIVER_PATH"
 
-sudo ln -sf ${CHROME_PATH}/chrome/linux-${CHROME_DRIVER_VERSION}/chrome-linux64/chrome /usr/local/bin/google-chrome
-sudo ln -sf ${CHROMEDRIVER_PATH}/chromedriver/linux-${CHROME_DRIVER_VERSION}/chromedriver-linux64/chromedriver /usr/local/bin/chromedriver
+sudo ln -sf ${CHROME_HEADLESS_PATH}/chrome-headless-shell/linux-${CHROME_VERSION}/chrome-headless-shell-linux64/chrome-headless-shell /usr/local/bin/chrome-headless-shell
+sudo ln -sf ${CHROMEDRIVER_PATH}/chromedriver/linux-${CHROME_VERSION}/chromedriver-linux64/chromedriver /usr/local/bin/chromedriver

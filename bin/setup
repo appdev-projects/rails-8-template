@@ -37,10 +37,15 @@ FileUtils.chdir APP_ROOT do
   puts "\n== Removing old logs and tempfiles =="
   system! "bin/rails log:clear tmp:clear"
 
-  puts "\n== Checking for JavaScript tests and installing chromedriver if needed =="
-  system! "bin/chromedriver_check"
-
   puts "\n== Creating test database =="
   system! "bin/rails db:create RAILS_ENV=test"
+
+  unless ENV["CODESPACE_NAME"]
+    puts "\n== Installing editor format-on-save gems (rufo, htmlbeautifier) =="
+    %w[rufo htmlbeautifier].each do |g|
+      system!("gem install #{g}") unless system("gem list -i -e #{g} > /dev/null 2>&1")
+    end
+  end
+
   puts "\n== Initial setup complete =="
 end

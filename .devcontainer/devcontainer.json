@@ -36,7 +36,7 @@
   "otherPortsAttributes": {"onAutoForward": "ignore"},
 
   // Use 'postCreateCommand' to run commands after the container is created.
-  "postCreateCommand": "bin/setup && gem install rufo && gem install htmlbeautifier",
+  "postCreateCommand": "bin/setup && bin/chromedriver_install && gem install rufo && gem install htmlbeautifier",
 
   // Use 'postAttachCommand' to run commands each time you attach to the container.
   "postAttachCommand": "bin/fix-ports",
