@@ -16,3 +16,9 @@
 :root {
   scroll-behavior: auto !important;
 }
+
+@media (max-width: 576px) {
+  #dev-toolbar {
+    display: none !important;
+  }
+}
