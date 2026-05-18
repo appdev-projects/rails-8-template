@@ -36,6 +36,16 @@ plugin :tmp_restart
 # Run the Solid Queue supervisor inside of Puma for single-server deployments
 plugin :solid_queue if ENV["SOLID_QUEUE_IN_PUMA"]
 
+# Run Solid Queue in async mode: worker/dispatcher/scheduler run as threads
+# inside the Puma master process instead of being forked into 4 subprocesses.
+# Required on Render's 512MB free plan — fork mode adds ~460MB of process
+# overhead (supervisor + 3 children) and pushes the container into OOM-loop.
+# Async mode collapses that to ~50MB of additional thread overhead in Puma
+# master. Trade-off: less isolation between SQ threads and Puma — a hung or
+# leaky SQ thread affects request serving. For low-traffic student projects
+# the trade-off is right; revisit if upgrading to a paid plan with more RAM.
+solid_queue_mode :async if ENV["SOLID_QUEUE_IN_PUMA"]
+
 # Specify the PID file. Defaults to tmp/pids/server.pid in development.
 # In other environments, only set the PID file if requested.
 pidfile ENV["PIDFILE"] if ENV["PIDFILE"]

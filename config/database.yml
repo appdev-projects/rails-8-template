@@ -17,7 +17,12 @@ default: &default
   encoding: unicode
   # For details on connection pooling, see Rails configuration guide
   # https://guides.rubyonrails.org/configuring.html#database-pooling
-  pool: <%= ENV.fetch("DB_POOL") { 5 } %>
+  #
+  # Sized for Puma's 3 request threads + Solid Queue's async-mode threads
+  # (3 worker + dispatcher + scheduler) sharing this pool. The previous
+  # default of 5 was right at the edge and produced ConnectionTimeoutError
+  # under any load once SQ threads moved into the Puma process.
+  pool: <%= ENV.fetch("DB_POOL") { 8 } %>
 
 
 development:
