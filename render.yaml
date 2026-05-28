@@ -11,12 +11,7 @@ services:
         sync: false
       # Memory optimization for Render free tier (512MB RAM)
       - key: WEB_CONCURRENCY
-        # 0 = Puma single mode (the master process serves HTTP directly,
-        # no forked workers). Any value ≥ 1 spawns that many worker
-        # processes on top of the master, each adding ~150MB. Combined
-        # with the four Solid Queue subprocesses below, anything above
-        # single mode OOMs on the 512MB free tier.
-        value: "0"
+        value: "0" # Puma single mode (no forked workers); greater value causes OOM on 512 MB free tier
       - key: RAILS_MAX_THREADS
         value: "3" # Cap threads to reduce memory
       - key: MALLOC_ARENA_MAX
