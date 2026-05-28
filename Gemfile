@@ -8,7 +8,7 @@ gem "importmap-rails"                 # JavaScript with ESM import maps
 gem "turbo-rails"                     # Hotwire page acceleration (SPA-like)
 gem "stimulus-rails"                  # Hotwire JavaScript framework
 gem "solid_cache"                     # Database-backed Rails.cache
-gem "solid_queue", "~> 1.3"           # Database-backed Active Job — 1.3+ required for solid_queue_mode :async in config/puma.rb
+gem "solid_queue", "~> 1.3" # Database-backed Active Job
 gem "solid_cable"                     # Database-backed Action Cable
 gem "bootsnap", require: false        # Faster boot times via caching
 gem "thruster", require: false        # HTTP caching/compression for Puma
