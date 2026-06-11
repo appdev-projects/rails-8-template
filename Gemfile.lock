@@ -116,7 +116,7 @@ GEM
       irb (~> 1.10)
       reline (>= 0.3.8)
     debug_inspector (1.2.0)
-    dev_toolbar (2.1.0)
+    dev_toolbar (3.0.0)
       rails (>= 7.0)
     devise (4.9.4)
       bcrypt (~> 3.0)
@@ -515,7 +515,7 @@ DEPENDENCIES
   capybara
   cgi
   debug
-  dev_toolbar (~> 2.1.0)
+  dev_toolbar (~> 3.0.0)
   dotenv
   draft_generators (~> 0.0.5)
   grade_runner (~> 0.0.16)

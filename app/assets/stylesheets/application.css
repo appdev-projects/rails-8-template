@@ -9,6 +9,7 @@
  * Consider organizing styles into separate files for maintainability.
  */
 
+@import url("dev_toolbar.css");
 @import url("custom-image.css");
 
 /* Bootstrap sets scroll-behavior: smooth on :root, which

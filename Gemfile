@@ -33,7 +33,7 @@ group :development do
   gem "annotaterb"                    # Add schema info to model files
   gem "better_errors"                 # Better error pages with console
   gem "binding_of_caller", "~> 2.0.0" # Required for better_errors console
-  gem "dev_toolbar", "~> 2.1.0"       # Development toolbar
+  gem "dev_toolbar", "~> 3.0.0"       # Development toolbar
   gem "draft_generators", "~> 0.0.5"  # Beginner-friendly Rails generators
   gem "haikunator"                    # Generate random names (for databases)
   gem "htmlbeautifier"                # Format HTML/ERB files
