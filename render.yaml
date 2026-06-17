@@ -3,6 +3,7 @@ services:
     name: my-app-name # the name of this service, you should change this
     runtime: docker # use Dockerfile for deployment
     plan: free # make sure to set this to free or you'll get billed $$$
+    region: ohio # set this to the SAME region as your database, near your users (Supabase "East US (Ohio)" = ohio) to avoid slow cross-region queries
     dockerfilePath: ./Dockerfile
     envVars: # this section sets some ENV variables needed by Render for deployment
       - key: SECRET_KEY_BASE

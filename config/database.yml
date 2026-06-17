@@ -83,3 +83,9 @@ test:
 production:
   <<: *default
   url: <%= ENV["DATABASE_URL"] %>
+  # When DATABASE_URL points at a Supabase connection pooler (Supavisor),
+  # these keep migrations and queries working across pooled connections.
+  # Harmless on the session pooler (port 5432); required on the transaction
+  # pooler (port 6543), where db:migrate otherwise hangs on an advisory lock.
+  prepared_statements: false
+  advisory_locks: false
