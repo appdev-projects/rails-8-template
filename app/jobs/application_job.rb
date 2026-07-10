@@ -1,4 +1,7 @@
 class ApplicationJob < ActiveJob::Base
+  # Keep enqueue semantics portable even though jobs currently share the primary database.
+  self.enqueue_after_transaction_commit = true
+
   # Automatically retry jobs that encountered a deadlock
   # retry_on ActiveRecord::Deadlocked
 
