@@ -7,21 +7,24 @@ services:
     command: sleep infinity
 
   db:
-    image: postgres:16.9
+    image: postgres:18.4
     restart: unless-stopped
     volumes:
-      - postgres-data:/var/lib/postgresql/data
+      # PG 18's image moved its VOLUME from /var/lib/postgresql/data to
+      # /var/lib/postgresql. The renamed volume keeps 16-era data out of the
+      # 18 server — rebuilt codespaces initdb fresh (bin/setup + rake sample_data).
+      - postgres-18-data:/var/lib/postgresql
     environment:
       POSTGRES_PASSWORD: postgres
       POSTGRES_USER: student
       POSTGRES_DB: postgres
   
   redis:
-    image: redis:latest
+    image: redis:7
     restart: unless-stopped
     volumes:
       - redis-data:/var/lib/redis/data
 
 volumes:
-  postgres-data:
+  postgres-18-data:
   redis-data:
