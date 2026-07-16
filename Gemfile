@@ -1,9 +1,9 @@
 source "https://rubygems.org"
 
-gem "rails", "~> 8.0.2"               # The web framework
+gem "rails", "~> 8.1"               # The web framework
 gem "propshaft"                       # Asset pipeline (CSS, JS, images)
-gem "pg", "~> 1.1"                    # PostgreSQL database adapter
-gem "puma", ">= 5.0"                  # Web server
+gem "pg", "~> 1.6"                    # PostgreSQL database adapter
+gem "puma", "~> 7.2"                  # Web server
 gem "importmap-rails"                 # JavaScript with ESM import maps
 gem "turbo-rails"                     # Hotwire page acceleration (SPA-like)
 gem "stimulus-rails"                  # Hotwire JavaScript framework
