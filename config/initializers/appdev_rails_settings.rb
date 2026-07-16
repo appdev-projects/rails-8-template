@@ -2,8 +2,14 @@
 # Consolidated Rails configuration for AppDev projects
 
 Rails.application.configure do
-  # Allow unsafe redirects (for student convenience)
-  config.action_controller.raise_on_open_redirects = false
+  # Allow unsafe redirects (for student convenience).
+  # Rails 8.1 renamed the setting; the guard keeps this file boot-safe on
+  # both sides of the fleet upgrade window (8.0 doesn't know the new name).
+  if Rails.gem_version >= Gem::Version.new("8.1")
+    config.action_controller.action_on_open_redirect = :log
+  else
+    config.action_controller.raise_on_open_redirects = false
+  end
 
   # Allow envoy.fyi to frame the app
   config.content_security_policy do |policy|

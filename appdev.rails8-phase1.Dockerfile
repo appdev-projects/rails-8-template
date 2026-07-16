@@ -56,17 +56,17 @@ RUN sudo mkdir -p $HOME \
     && bash -lc " \
         rvm get head \
         && rvm requirements \
-        && rvm install 4.0.1 \
-        && rvm use 4.0.1 --default \
+        && rvm install 4.0.5 \
+        && rvm use 4.0.5 --default \
         && rvm rubygems current \
         && gem install bundler --no-document" \
     && rm -rf /home/student/.rvm/src/ /home/student/.rvm/archives/ /home/student/.rvm/log/ \
     && echo '[[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm" # Load RVM into a shell session *as a function*' >> /home/student/.bashrc.d/70-ruby && echo "rvm_gems_path=/home/student/.rvm" > ~/.rvmrc
 
-# Note: .bundle/ruby/ uses Ruby's ABI version (4.0.0), not the patch version (4.0.1)
-ENV GEM_HOME=/home/student/.rvm/gems/ruby-4.0.1:/workspaces/.rvm \
-    GEM_PATH=/home/student/.bundle/ruby/4.0.0:/home/student/.rvm/gems/ruby-4.0.1:/home/student/.rvm/gems/ruby-4.0.1@global \
-    PATH=/home/student/.bundle/ruby/4.0.0/bin:/home/student/.rvm/gems/ruby-4.0.1/bin:/home/student/.rvm/gems/ruby-4.0.1@global/bin:/home/student/.rvm/rubies/ruby-4.0.1/bin:/home/student/.rvm/bin:/workspaces/.rvm/bin:$PATH
+# Note: .bundle/ruby/ uses Ruby's ABI version (4.0.0), not the patch version (4.0.5)
+ENV GEM_HOME=/home/student/.rvm/gems/ruby-4.0.5:/workspaces/.rvm \
+    GEM_PATH=/home/student/.bundle/ruby/4.0.0:/home/student/.rvm/gems/ruby-4.0.5:/home/student/.rvm/gems/ruby-4.0.5@global \
+    PATH=/home/student/.bundle/ruby/4.0.0/bin:/home/student/.rvm/gems/ruby-4.0.5/bin:/home/student/.rvm/gems/ruby-4.0.5@global/bin:/home/student/.rvm/rubies/ruby-4.0.5/bin:/home/student/.rvm/bin:/workspaces/.rvm/bin:$PATH
 
 WORKDIR /rails-template
 
@@ -139,5 +139,5 @@ __git_complete g __git_main" >> ~/.bash_aliases \
     && echo 'export PATH="$PWD/bin:/home/student/.bundle/ruby/4.0.0/bin:$PATH"' >> ~/.bashrc \
     && echo "# Configure bundler and RVM paths" >> ~/.bashrc \
     && echo 'export BUNDLE_PATH="/home/student/.bundle"' >> ~/.bashrc \
-    && echo 'export GEM_HOME="/home/student/.rvm/gems/ruby-4.0.1"' >> ~/.bashrc \
-    && echo 'export GEM_PATH="/home/student/.bundle/ruby/4.0.0:/home/student/.rvm/gems/ruby-4.0.1:/home/student/.rvm/gems/ruby-4.0.1@global"' >> ~/.bashrc
+    && echo 'export GEM_HOME="/home/student/.rvm/gems/ruby-4.0.5"' >> ~/.bashrc \
+    && echo 'export GEM_PATH="/home/student/.bundle/ruby/4.0.0:/home/student/.rvm/gems/ruby-4.0.5:/home/student/.rvm/gems/ruby-4.0.5@global"' >> ~/.bashrc
