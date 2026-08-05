@@ -34,7 +34,7 @@ group :development do
   gem "better_errors"                 # Better error pages with console
   gem "binding_of_caller", "~> 2.0.0" # Required for better_errors console
   gem "dev_toolbar", "~> 3.0.0"       # Development toolbar
-  gem "draft_generators", "~> 0.0.5"  # Beginner-friendly Rails generators
+  gem "draft_generators", "~> 0.0.6" # Beginner-friendly Rails generators
   gem "haikunator"                    # Generate random names (for databases)
   gem "htmlbeautifier"                # Format HTML/ERB files
   gem "pry-rails"                     # Better Rails console
