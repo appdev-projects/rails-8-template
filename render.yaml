@@ -5,6 +5,7 @@ services:
     plan: free # make sure to set this to free or you'll get billed $$$
     region: ohio # set this to the SAME region as your database, near your users (Supabase "East US (Ohio)" = ohio) to avoid slow cross-region queries
     dockerfilePath: ./Dockerfile
+    healthCheckPath: /up
     envVars: # this section sets some ENV variables needed by Render for deployment
       - key: SECRET_KEY_BASE
         generateValue: true
@@ -15,8 +16,6 @@ services:
         value: "0" # Puma single mode (no forked workers); greater value causes OOM on 512 MB free tier
       - key: RAILS_MAX_THREADS
         value: "3" # Cap threads to reduce memory
-      - key: MALLOC_ARENA_MAX
-        value: "2" # Reduce memory fragmentation
       - key: SOLID_QUEUE_IN_PUMA
         value: "true" # Run background jobs in same process
       - key: BUNDLE_WITHOUT

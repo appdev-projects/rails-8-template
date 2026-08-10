@@ -2,7 +2,8 @@ default: &default
   store_options:
     # Cap age of oldest cache entry to fulfill retention policies
     # max_age: <%= 60.days.to_i %>
-    max_size: <%= 256.megabytes %>
+    # Leave most of Supabase Free's database quota for application data and Solid Queue/Cable.
+    max_size: <%= Integer(ENV.fetch("SOLID_CACHE_MAX_SIZE_MB", 64)).megabytes %>
     namespace: <%= Rails.env %>
 
 development:
