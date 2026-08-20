@@ -99,12 +99,16 @@ WORKDIR /rails-template
 # Pre-install gems into /rails-template/gems/
 COPY --chown=student:student Gemfile Gemfile.lock /rails-template/
 RUN /bin/bash -l -c "bundle config set --local path '/home/student/.bundle' && bundle install" \
-    # Remove rdoc's RubyGems plugin from BUNDLE_PATH to prevent duplicate loading.
-    # rdoc is already a Ruby default gem; having a second copy in BUNDLE_PATH (via GEM_PATH)
-    # causes constant redefinition warnings during 'gem install'. The gem dir + spec stay
-    # so bundler considers it installed and won't reinstall at Codespace startup.
+    # Remove rdoc's RubyGems plugin from BOTH gem paths to prevent duplicate loading.
+    # Two rdocs exist (bundled 7.x in the mise ruby, newer one in BUNDLE_PATH via GEM_PATH);
+    # if either plugin loads, its rdoc's constants clash with the version the doc-generation
+    # hook activates later, spewing redefinition warnings during 'gem install'. With no
+    # plugin, 'gem install' skips ri/rdoc generation (like bundler always has) and any
+    # 'require "rdoc"' activates only the newest copy. The gem dir + spec stay so bundler
+    # considers it installed and won't reinstall at Codespace startup.
     && rm -f /home/student/.bundle/ruby/${RUBY_ABI}/plugins/rdoc_plugin.rb \
-    && rm -f /home/student/.bundle/ruby/${RUBY_ABI}/gems/rdoc-*/lib/rubygems_plugin.rb
+    && rm -f /home/student/.bundle/ruby/${RUBY_ABI}/gems/rdoc-*/lib/rubygems_plugin.rb \
+    && rm -f ${MISE_RUBY}/lib/ruby/gems/${RUBY_ABI}/plugins/rdoc_plugin.rb
 
 RUN sudo wget -qO ./prompt "https://gist.githubusercontent.com/jelaniwoods/7e5db8d72b3dfac257b7eb562cfebf11/raw/af43083d91c0eb1489059a2ad9c39474a34ddbda/thoughtbot-style-prompt" \
     && /bin/bash -l -c "cat ./prompt >> ~/.bashrc" \
