@@ -1,36 +1,39 @@
 import { Controller } from "@hotwired/stimulus"
 
 // Modal Controller for Stimulus
-// 
+//
 // This controller manages modal dialogs using the native HTML <dialog> element
-// combined with Pico CSS framework's modal styling classes.
+// combined with the modal styling in tailwind.appdev.css.
 //
 // Expected HTML Structure:
 // ------------------------
 // <div data-controller="modal">
 //   <!-- Button to open the modal -->
 //   <button data-action="click->modal#open">Open Modal</button>
-//   
+//
 //   <!-- The modal dialog itself -->
 //   <dialog data-modal-target="dialog">
-//     <article>
+//     <div class="card">
 //       <header>
 //         <!-- Close button (X) in the header -->
 //         <button aria-label="Close" rel="prev" data-action="click->modal#close"></button>
 //         <h3>Modal Title</h3>
 //       </header>
-//       
+//
 //       <!-- Modal content goes here -->
 //       <p>Your content...</p>
-//       
+//
 //       <footer>
 //         <!-- Cancel and confirm buttons -->
 //         <button type="button" data-action="click->modal#close">Cancel</button>
 //         <button type="submit" data-action="click->modal#confirm">Confirm</button>
 //       </footer>
-//     </article>
+//     </div>
 //   </dialog>
 // </div>
+//
+// The card inside the dialog can be written either way — <div class="card">
+// or <article> — because the stylesheet styles both spellings.
 
 export default class extends Controller {
   // Stimulus targets - defines which elements this controller can access
@@ -48,6 +51,7 @@ export default class extends Controller {
     // This ensures we can properly remove these exact listeners later
     this._boundHandleBackdrop = this._handleBackdrop.bind(this)
     this._boundHandleCancel = this._handleCancel.bind(this)
+    this._boundHandlePointerdown = this._handlePointerdown.bind(this)
   }
 
   // Opens the modal - triggered by data-action="click->modal#open"
@@ -63,7 +67,7 @@ export default class extends Controller {
     // This prevents animation conflicts
     document.documentElement.classList.remove("modal-is-closing")
     
-    // Add Pico CSS framework classes to the <html> element:
+    // Add the stylesheet's modal classes to the <html> element:
     // - modal-is-open: locks scrolling on the page behind the modal
     // - modal-is-opening: triggers the opening animation
     document.documentElement.classList.add("modal-is-open", "modal-is-opening")
@@ -77,19 +81,21 @@ export default class extends Controller {
     
     // Add event listeners:
     // - "cancel": fired when user presses ESC key
+    // - "pointerdown": to record where a press started (see _handleBackdrop)
     // - "click": to detect clicks on the backdrop (outside the modal content)
     d.addEventListener("cancel", this._boundHandleCancel)
+    d.addEventListener("pointerdown", this._boundHandlePointerdown)
     d.addEventListener("click", this._boundHandleBackdrop)
     
     // Use the native HTML dialog showModal() method
     // This creates a modal with a backdrop and makes the rest of the page inert
     d.showModal()
     
-    // Remove the opening animation class after the animation completes (400ms)
-    // This matches Pico CSS's animation duration
+    // Remove the opening animation class after the animation completes (200ms)
+    // This matches our stylesheet's animation duration
     setTimeout(() => {
       document.documentElement.classList.remove("modal-is-opening")
-    }, 400)
+    }, 200)
     
     // Focus management for accessibility:
     // First try to focus an element with [autofocus] attribute
@@ -109,10 +115,10 @@ export default class extends Controller {
     
     const d = this.dialogTarget
     
-    // Add closing animation class to trigger Pico CSS closing animation
+    // Add closing animation class to trigger the closing animation
     document.documentElement.classList.add("modal-is-closing")
 
-    // Wait for closing animation to complete (400ms), then:
+    // Wait for closing animation to complete (200ms), then:
     setTimeout(() => {
       // Remove all modal-related classes from <html>
       document.documentElement.classList.remove("modal-is-closing", "modal-is-open")
@@ -125,7 +131,7 @@ export default class extends Controller {
       
       // Return focus to the element that opened the modal (accessibility)
       this._lastFocused?.focus()
-    }, 400)
+    }, 200)
   }
 
   // Handles the confirm action - triggered by data-action="click->modal#confirm"
@@ -141,17 +147,36 @@ export default class extends Controller {
     this.dispatch("confirm")
   }
 
+  // Private method: Finds the card that holds the modal's content
+  // The <dialog> covers the whole viewport when modal, so anything outside
+  // this element counts as the backdrop. Both spellings of a card are
+  // accepted, and we fall back to the dialog's first child so a modal built
+  // from some other markup still gets working backdrop clicks.
+  _content() {
+    return this.dialogTarget.querySelector("article, .card") ||
+           this.dialogTarget.firstElementChild
+  }
+
+  // Private method: Records where a press (mousedown/touch) started
+  // A "click" fires on release, so selecting text inside the modal and
+  // releasing the mouse outside it would otherwise count as a backdrop
+  // click and close the modal by mistake. We only treat a click as a
+  // backdrop click if the press also STARTED on the backdrop.
+  _handlePointerdown(e) {
+    const content = this._content()
+    this._pressStartedOnBackdrop = !content?.contains(e.target)
+  }
+
   // Private method: Handles clicks on the modal backdrop
   _handleBackdrop(e) {
-    // The <dialog> element covers the entire viewport when modal
-    // The <article> inside it is the actual modal content
-    // If the click target is NOT inside the article, it's on the backdrop
-    const article = this.dialogTarget.querySelector("article")
-    
+    // If the click target is NOT inside the card, it landed on the backdrop
+    const content = this._content()
+
     // Only close if:
-    // 1. Click was outside the article (on the backdrop)
-    // 2. closeOnBackdrop setting is true
-    if (!article.contains(e.target) && this.closeOnBackdropValue) {
+    // 1. Click was released outside the card (on the backdrop)
+    // 2. The press also started on the backdrop (not a text-selection drag)
+    // 3. closeOnBackdrop setting is true
+    if (!content?.contains(e.target) && this._pressStartedOnBackdrop && this.closeOnBackdropValue) {
       this.close()
     }
   }
@@ -169,6 +194,7 @@ export default class extends Controller {
     const d = this.dialogTarget
     // Remove the bound listeners (must use the same references created in connect())
     d.removeEventListener("cancel", this._boundHandleCancel)
+    d.removeEventListener("pointerdown", this._boundHandlePointerdown)
     d.removeEventListener("click", this._boundHandleBackdrop)
   }
   
