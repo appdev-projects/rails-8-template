@@ -1,1 +1,6 @@
 # See https://www.robotstxt.org/robotstxt.html for documentation on how to use the robots.txt file
+#
+# Parameterized URLs (filters, sorts, pagination combinations) form a near-infinite
+# crawl space; disallow them so polite crawlers stick to clean canonical pages.
+User-agent: *
+Disallow: /*?

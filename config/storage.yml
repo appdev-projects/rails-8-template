@@ -2,6 +2,11 @@ test:
   service: Disk
   root: <%= Rails.root.join("tmp/storage") %>
 
+# Production uses this :local service too (see config/environments/production.rb),
+# and on Render the container filesystem is wiped on every deploy, restart, and
+# free-tier spin-down. Uploads written here in production disappear. Before
+# accepting real uploads, configure an off-box service (we use Cloudinary in the
+# course) and point config.active_storage.service at it.
 local:
   service: Disk
   root: <%= Rails.root.join("storage") %>

@@ -16,6 +16,7 @@ gem "tzinfo-data", platforms: %i[windows jruby] # Timezone data for Windows/JRub
 gem "dotenv"                          # Load environment variables from .env
 gem "http"                            # Simple HTTP client for APIs
 gem "rollbar"                         # Error tracking in production
+gem "rack-attack"                     # Per-IP rate limiting and scanner blocklist (config/initializers/rack_attack.rb)
 gem "appdev_support"                  # Learning helpers (nicer error messages, etc.)
 gem "cgi" # Required for Ruby 4.0+ (removed from stdlib)
 gem "tsort" # Required for Ruby 4.0+ (moving out of default gems)

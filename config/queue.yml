@@ -14,5 +14,18 @@ development:
 test:
   <<: *default
 
+# Solid Queue has no LISTEN/NOTIFY, so every poll is a real query. Development
+# and test poll a local database, where that is free. Production's database is
+# external (Neon) and Render meters every query as outbound bandwidth: the stock
+# 0.1s interval costs about 30 MB per instance-hour on a completely idle app,
+# enough to spend the 5 GB monthly allowance in about a week. Polling every 5s
+# cuts that by ~95%; the trade is up to 5s before a new job is picked up.
 production:
-  <<: *default
+  dispatchers:
+    - polling_interval: <%= ENV.fetch("SOLID_QUEUE_DISPATCH_INTERVAL", 5) %>
+      batch_size: 500
+  workers:
+    - queues: "*"
+      threads: 3
+      processes: <%= ENV.fetch("JOB_CONCURRENCY", 1) %>
+      polling_interval: <%= ENV.fetch("SOLID_QUEUE_POLL_INTERVAL", 5) %>
