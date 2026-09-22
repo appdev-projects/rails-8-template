@@ -83,9 +83,10 @@ test:
 production:
   <<: *default
   url: <%= ENV["DATABASE_URL"] %>
-  # When DATABASE_URL points at a Supabase connection pooler (Supavisor),
-  # these keep migrations and queries working across pooled connections.
-  # Harmless on the session pooler (port 5432); required on the transaction
-  # pooler (port 6543), where db:migrate otherwise hangs on an advisory lock.
+  # Use Neon's DIRECT connection string (no "-pooler" in the hostname). These
+  # two settings are harmless on a direct connection, and they keep db:prepare
+  # and queries working if the pooled string is pasted by mistake: Neon's
+  # pooler is PgBouncer in transaction mode, where the migration advisory lock
+  # and server-side prepared statements otherwise break.
   prepared_statements: false
   advisory_locks: false

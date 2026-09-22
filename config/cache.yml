@@ -2,7 +2,10 @@ default: &default
   store_options:
     # Cap age of oldest cache entry to fulfill retention policies
     # max_age: <%= 60.days.to_i %>
-    max_size: <%= 256.megabytes %>
+    # Solid Cache shares the one external database with your own tables and
+    # with Solid Queue/Cable. Neon Free gives 0.5 GB per project, so keep the
+    # disposable cache small; raise SOLID_CACHE_MAX_SIZE_MB on a bigger plan.
+    max_size: <%= Integer(ENV.fetch("SOLID_CACHE_MAX_SIZE_MB", "64"), 10).megabytes %>
     namespace: <%= Rails.env %>
 
 development:

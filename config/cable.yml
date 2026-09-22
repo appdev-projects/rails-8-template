@@ -8,7 +8,11 @@ development:
 test:
   adapter: test
 
+# Solid Cable polls the same metered external database as Solid Queue (see
+# config/queue.yml), but only while someone is subscribed, so this costs nothing
+# until an app adds turbo_stream_from. A second is still "instant" for a Turbo
+# broadcast; lower SOLID_CABLE_POLL_INTERVAL for typing indicators or live cursors.
 production:
   adapter: solid_cable
-  polling_interval: 0.1.seconds
+  polling_interval: <%= ENV.fetch("SOLID_CABLE_POLL_INTERVAL", 1) %>.seconds
   message_retention: 1.day
