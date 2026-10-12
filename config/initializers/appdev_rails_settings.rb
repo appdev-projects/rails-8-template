@@ -10,11 +10,6 @@ Rails.application.configure do
   else
     config.action_controller.raise_on_open_redirects = false
   end
-
-  # Allow envoy.fyi to frame the app
-  config.content_security_policy do |policy|
-    policy.frame_ancestors :self, "https://envoy.fyi"
-  end
 end
 
 # Phase 1 beginner-friendly security settings
