@@ -34,3 +34,9 @@ end
 end
 
 Capybara.default_max_wait_time = 3
+
+# Point js: true examples at the registered Chrome driver. Without this Capybara
+# falls back to its default :selenium driver, which is Firefox, and there is no
+# Firefox in the codespace image, so the session dies with "unexpectedly closed
+# with status 255".
+Capybara.javascript_driver = :headless_chrome
