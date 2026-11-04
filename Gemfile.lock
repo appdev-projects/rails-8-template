@@ -542,7 +542,7 @@ DEPENDENCIES
   rufo
   selenium-webdriver (~> 4.41)
   shoulda-matchers (~> 7.0)
-  solid_cable
+  solid_cable (~> 4.0.0)
   solid_cache
   solid_queue (~> 1.3)
   stimulus-rails

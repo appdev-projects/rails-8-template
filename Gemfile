@@ -9,7 +9,7 @@ gem "turbo-rails"                     # Hotwire page acceleration (SPA-like)
 gem "stimulus-rails"                  # Hotwire JavaScript framework
 gem "solid_cache"                     # Database-backed Rails.cache
 gem "solid_queue", "~> 1.3" # Database-backed Active Job
-gem "solid_cable"                     # Database-backed Action Cable
+gem "solid_cable", "~> 4.0.0" # Database-backed Action Cable (4.1 loses broadcasts from short-lived processes, rails/solid_cable#92)
 gem "bootsnap", require: false        # Faster boot times via caching
 gem "thruster", require: false        # HTTP caching/compression for Puma
 gem "tzinfo-data", platforms: %i[windows jruby] # Timezone data for Windows/JRuby
