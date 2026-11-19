@@ -1,6 +1,6 @@
 FROM ubuntu:24.04
 
-ARG RUBY_VERSION=4.0.5
+ARG RUBY_VERSION=4.0.10
 # Ruby's ABI version — .bundle/ruby/<ABI> and gem dirs use this, not the patch version
 ARG RUBY_ABI=4.0.0
 
@@ -89,7 +89,7 @@ RUN sudo mkdir -p $HOME \
 # Same path layout contract as the RVM image: /home/student/.bundle/ruby/<ABI>
 # comes first so project gems win; GEM_HOME is single-entry (the old colon-joined
 # GEM_HOME confused bundler in non-login shells).
-ENV MISE_RUBY=/home/student/.local/share/mise/installs/ruby/4.0.5
+ENV MISE_RUBY=/home/student/.local/share/mise/installs/ruby/4.0.10
 ENV GEM_HOME=${MISE_RUBY}/lib/ruby/gems/${RUBY_ABI} \
     GEM_PATH=/home/student/.bundle/ruby/${RUBY_ABI}:${MISE_RUBY}/lib/ruby/gems/${RUBY_ABI} \
     PATH=/home/student/.bundle/ruby/${RUBY_ABI}/bin:${MISE_RUBY}/lib/ruby/gems/${RUBY_ABI}/bin:${MISE_RUBY}/bin:/home/student/.local/share/mise/shims:/home/student/.local/bin:$PATH
@@ -146,5 +146,5 @@ __git_complete g __git_main" >> ~/.bash_aliases \
     && echo 'export PATH="$PWD/bin:/home/student/.bundle/ruby/4.0.0/bin:$PATH"' >> ~/.bashrc \
     && echo "# Configure bundler and mise-ruby paths" >> ~/.bashrc \
     && echo 'export BUNDLE_PATH="/home/student/.bundle"' >> ~/.bashrc \
-    && echo 'export GEM_HOME="/home/student/.local/share/mise/installs/ruby/4.0.5/lib/ruby/gems/4.0.0"' >> ~/.bashrc \
-    && echo 'export GEM_PATH="/home/student/.bundle/ruby/4.0.0:/home/student/.local/share/mise/installs/ruby/4.0.5/lib/ruby/gems/4.0.0"' >> ~/.bashrc
+    && echo 'export GEM_HOME="/home/student/.local/share/mise/installs/ruby/4.0.10/lib/ruby/gems/4.0.0"' >> ~/.bashrc \
+    && echo 'export GEM_PATH="/home/student/.bundle/ruby/4.0.0:/home/student/.local/share/mise/installs/ruby/4.0.10/lib/ruby/gems/4.0.0"' >> ~/.bashrc
