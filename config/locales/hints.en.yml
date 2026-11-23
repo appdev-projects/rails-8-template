@@ -1,0 +1,1462 @@
+# Hints for `rails grade` specs, shared by every project in the fleet.
+#
+# THIS FILE IS SYNCED. Its one source is rails8/config/locales/hints.en.yml in
+# firstdraft/project-syncing; the sync workflow also copies it to the Sinatra repos
+# as spec/support/hints.en.yml. A project repo's copy is overwritten at the next
+# sync, so add or change hints in project-syncing, never in a project's own
+# config/locales/en.yml.
+#
+# A spec cites hints by key, most useful first:
+#
+#     it "has a label for 'Title'", points: 1, hint: h("copy_must_match label_for_input") do
+#
+# `h()` (spec/spec_helper.rb) splits the string on spaces and looks each key up
+# under `en.hints`. A key that is missing here reaches the student as
+# "Translation missing: en.hints.the_key", so add the hint here before a spec cites it.
+#
+# Where hints show up: `grade` in the terminal prints only the FIRST hint of a
+# failing example, as raw text; the grades page (grades.firstdraft.com) renders
+# every hint as Markdown. So lead with the hint that matters most, and keep the
+# Markdown light enough to read unrendered.
+#
+# Writing a hint: speak to a student working alone who has just seen this one
+# test fail. Say what the test is looking for, then the smallest nudge that gets
+# them unstuck: the method, attribute, or file that matters, with a short
+# example in the course's own style. Don't hand over the whole solution, and
+# don't name a project in a general hint (a hint outlives the project it was
+# written for).
+#
+# Layout: general hints first, by topic (any project may cite them), then hints written
+# for one project, grouped under a comment naming its repos. Keys are global,
+# so a project hint's key must be specific enough not to clash.
+#
+# Rails loads every file in config/locales in alphabetical order, so this file
+# loads after en.yml and wins if both define the same key.
+
+en:
+  hints:
+    # ======================== General hints ========================
+
+    # --- Text, links, and page structure ---
+
+    copy_must_match: >-
+      The test looks for the exact text that the target (or the lesson) shows, so
+      spelling, capitalization, punctuation, and spaces all have to match. Copying the
+      text straight from the target, or from the test itself, is the safest way to get it
+      right.
+    structure_must_match: >-
+      The test looks for the same HTML elements that the target uses, not only the same
+      text. Right-click the target, choose "View Page Source", and use the same elements
+      that it does for each piece of content (for example `<h1>`, `<a>`, `<dl>` with
+      `<dt>` and `<dd>`, or `<ul>` with `<li>`).
+    link_text_and_href: >-
+      The test checks two things about a link: its text, between `<a>` and `</a>`, which
+      must match the target's exactly, and its `href=""`, the exact path it leads to, as
+      in `<a href="/about">About us</a>`. (With helper methods, `<%= link_to "About us",
+      "/about" %>` writes the same tag.) Use View Source on the target and on your page to
+      compare both.
+    dynamic_href: >-
+      To build a link from a record, embed the value inside the `href=""` attribute with
+      ERB, for example `<a href="/movies/<%= the_movie.id %>"><%= the_movie.title %></a>`,
+      and make the link's text what the target shows. Use View Source to check that each
+      link's URL came out exactly like the target's.
+    shared_html_in_layout: >-
+      The target shows these links on every page. Write them once, in the layout that
+      wraps every template (`views/layout.erb` in Sinatra,
+      `app/views/layouts/application.html.erb` in Rails), above the `<%= yield %>`, and
+      every page gets them.
+
+    # --- Pages, routes, and RCAV ---
+
+    read_error_page: >-
+      The test visits this URL and expects a page back, not an error. Visit the same URL
+      in your own app and read the error page from the top: it names the one piece that
+      doesn't line up. "No route matches" (or a 404, or in Sinatra "Sinatra doesn't know
+      this ditty") means there is no route for this exact path, or a route higher up, like
+      a catch-all `get("/:username", ...)`, catches it first. Anything else names the file
+      and line that broke: a controller that Rails can't find, a missing template, a key
+      that `params.fetch` can't find. Fix that one piece, refresh, and read the next
+      message.
+    rcav_order: >-
+      Visit this URL in your live app preview and read the error page. Rails handles a
+      request in RCAV order (Route, Controller, Action, View), and the message names the
+      first piece that isn't connected yet: "No route matches" means `config/routes.rb`
+      has no route for this exact path, for example `get("/movies", { :controller =>
+      "movies", :action => "index" })`; "uninitialized constant" means the controller file
+      in `app/controllers/` is missing or misnamed; "could not be found" means the
+      controller has no `def` for that action; "Missing template" means the view template
+      under `app/views/` isn't there. Fix that one piece, refresh, and check that the
+      message changes.
+    dynamic_route_segment: >-
+      A path segment that starts with a colon is dynamic: it matches any value in that
+      position. `get("/movies/:path_id", { :controller => "movies", :action => "show" })`
+      matches `/movies/1`, `/movies/42`, and so on, and the action reads the value with
+      `params.fetch("path_id")`. One dynamic route can replace a set of routes that differ
+      only in that segment.
+    route_order: >-
+      Rails checks the routes in `config/routes.rb` from top to bottom and uses the first
+      one that matches. If `get("/photos/:path_id", ...)` comes before `get("/photos/new",
+      ...)`, then a visit to `/photos/new` treats the word "new" as an ID. Put routes for
+      fixed paths above the dynamic route that starts the same way.
+    restful_routes: >-
+      The test expects RESTful paths, which name the resource and leave the operation to
+      the HTTP verb: `post("/photos", ...)` to create, `patch("/photos/:id", ...)` to
+      update, and `delete("/photos/:id", ...)` to destroy. Paths like `/insert_photo` or
+      `/delete_photo/:id` won't match. Change the route, then every `action=""` and
+      `href=""` that points at it.
+    redirect_vs_render: |-
+      `render` takes **the path of a template** inside `app/views`, like `render({ :template => "movies/index" })`. Rails uses that template to draw the page, with the instance variables from _this_ action.
+
+      `redirect_to` takes **a URL**, like `redirect_to("/movies")`. It sends the browser to that URL, which runs _a different_ action.
+
+      Don't give `redirect_to` a template path, or `render` a URL.
+    embed_vs_interpolate: >-
+      ERB tags like `<%= %>` only work inside `.html.erb` view templates. To build a
+      `String` in Ruby code (in a controller action, say, when you put together an API
+      URL), use `+` or interpolation, `"...#{ }..."`, instead.
+    passed_on_starter: >-
+      This test passed with the starter code, so if it fails now, one of your own changes
+      broke it. Run `git diff` to see everything you've changed since your last commit,
+      and look there first: it's usually a name that no longer lines up from one file to
+      the next (a route, an action, a template, a key you `fetch` from `params`). Run
+      `grade` after each small change, so that you know which one did it.
+
+    # --- Forms and params ---
+
+    form_action: >-
+      The `<form>` needs an `action=""` attribute: the path that the browser requests when
+      the form is submitted, for example `<form action="/square/results">`. Without one,
+      the form submits back to the page it's on. Point it at the route whose action
+      processes the inputs; the path must match that route exactly.
+    post_form: >-
+      A form that creates records should send a POST request, so the `<form>` needs
+      `method="post"`, and its `action=""` must point at a route defined with `post(...)`
+      in `config/routes.rb` (`resources` defines one for you). `form_with` writes both
+      attributes: `form_with(url: photos_path)` posts by default, and so does
+      `form_with(model: @photo)` when `@photo` is a new record. View Source to check what
+      your form really has.
+    button_type: >-
+      If nothing happens when you click the button, check two things: the `<button>` must
+      be inside the `<form>`...`</form>`, and it must not have `type="button"` (remove
+      that attribute, or change it to `type="submit"`).
+    label_for_input: >-
+      Give each `<input>` an `id=""`, and give its `<label>` a `for=""` attribute with the
+      same value. The test finds each input by the text of its label, so without a
+      matching pair it can't tell which input goes with which label (and neither can a
+      screen reader). With helper methods, `form.label :caption` and `form.text_field
+      :caption` inside `form_with(model: ...)` write a matching pair for you; `label_tag
+      :caption` next to `text_field_tag "photo[caption]"` doesn't, because that input's
+      `id` is `photo_caption`.
+    names_for_inputs: |-
+      Give each `<input>` in your form a unique `name=""` attribute.
+
+      `name=""` is the attribute that does the work: it decides what the user's input is labeled as in the query string, and therefore which key it is stored under in the `params` hash, and therefore how you get it back out in the next action.
+
+      `placeholder=""` and friends make a form friendlier, but `name=""` is the one that you _must_ include.
+
+      If the target's inputs have particular `name`s, use the same ones: the tests may skip your form and visit the next page with those names in the query string.
+    input_name_must_match: >-
+      The test fills in this field by its `name=""`, the name in the failure message or in
+      the test's `fill_in "..."` line. Give the input exactly that name, and read the same
+      key in the action with `params.fetch`.
+    count_inputs: >-
+      The test counts every `<input>` on the page and expects as many as the target has.
+      Compare with View Source on the target: if the target submits its form with a
+      `<button>`, use a `<button>` rather than an `<input type="submit">`, and remove any
+      extra inputs left over from experimenting.
+    value_attribute: >-
+      To pre-fill an `<input>`, set its `value=""` attribute, for example `<input
+      name="query_title" value="<%= @the_movie.title %>">`.
+    prepopulate_textarea: >-
+      A `<textarea>` has no `value=""` attribute. To pre-fill one, put the text between
+      its opening and closing tags: `<textarea name="query_caption"><%= @the_photo.caption
+      %></textarea>`.
+    hidden_input: >-
+      The form needs an `<input type="hidden">` whose `value=""` is the ID of the record
+      on the page, for example `<input type="hidden" name="director_id_param" value="<%=
+      @the_director.id %>">`. The browser doesn't show it, but it sends its `name` and
+      `value` along with the other inputs, so the action that the form submits to can read
+      the ID from `params`.
+    params_are_strings: >-
+      Every value in the `params` hash is a `String`, even when it looks like a number.
+      Convert it before you compute with it, using
+      [`.to_i`](https://docs.ruby-lang.org/en/master/String.html#method-i-to_i),
+      [`.to_f`](https://docs.ruby-lang.org/en/master/String.html#method-i-to_f), or
+      [`Date.parse()`](https://docs.ruby-lang.org/en/master/Date.html#method-c-parse).
+    to_f_not_to_i: >-
+      The test types a number with a decimal point. `.to_i` throws away everything after
+      it (`"42.42".to_i` returns `42`), so use `.to_f` to keep the decimals:
+      `"42.42".to_f` returns `42.42`.
+    blank_means_nil: >-
+      If the page loads but a value is blank, the template is printing an instance
+      variable that the action never set under that exact name. An instance variable that
+      was never assigned is `nil`, and `nil` prints as nothing, so there's no error.
+      Compare the names in the action and in the template, `@` and capitalization
+      included.
+    param_to_column: >-
+      The record was saved, but a column didn't get the value that the test typed. Follow
+      that one value through: the input's `name=""`, the key that the action reads with
+      `params.fetch`, and the column that it's assigned to. All three have to line up, for
+      example `name="caption_param"`, `params.fetch("caption_param")`, and
+      `the_photo.caption = ...`.
+    select_for_foreign_key: >-
+      To choose an associated record, use a `<select>` with a `<label>` of its own (the
+      test finds the dropdown by the label's text, and picks an option by the text the
+      target shows). Give the `<select>` the `name=""` of the foreign key param, and loop
+      to make one `<option>` per record, with the record's ID as its `value=""`: `<option
+      value="<%= a_user.id %>"><%= a_user.name %></option>`.
+    preselect_option: >-
+      An edit form's `<select>` has to start out on the record's current choice.
+      Otherwise, submitting the form sends the first option (often a blank "Choose..."
+      one), which blanks the column or fails a validation. Add the `selected` attribute to
+      the matching `<option>`: `<option value="<%= a_user.id %>" <%= "selected" if
+      a_user.id == @the_post.author_id %>>`.
+    authenticity_token: >-
+      Rails refuses a POST form that doesn't carry its security token, with the error
+      `ActionController::InvalidAuthenticityToken`. Put `<input type="hidden"
+      name="authenticity_token" value="<%= form_authenticity_token %>">` inside each
+      `<form method="post">`. (`form_with` and `button_to` add it for you.)
+    patch_form: >-
+      A `<form>` can only send GET or POST, so an update form keeps `method="post"` and
+      adds `<input type="hidden" name="_method" value="patch">`; Rails reads it and sends
+      the request to your `patch(...)` route. `form_with(model: @photo)` adds it for you
+      when `@photo` is already saved.
+    delete_form: >-
+      A link can only make a GET request, so deleting takes a form: a `<form
+      method="post">` whose `action=""` is the record's path, holding the authenticity
+      token, `<input type="hidden" name="_method" value="delete">`, and a `<button>`.
+      Rails reads `_method` and sends the request to your `delete(...)` route. The helper
+      `button_to` writes the whole form for you: `<%= button_to "Delete photo",
+      photo_path(@photo), method: :delete %>`.
+    form_builder_names: >-
+      Inside `form_with(model: @photo) do |form|`, the form builder names each input after
+      the model and the column: `form.text_field :caption` writes `<input
+      name="photo[caption]" id="photo_caption">`, `form.textarea :caption` writes a
+      `<textarea>` with the same name, and on a saved record each one is filled in with
+      its current value. View Source to check the `name=""` that each input really has.
+    strong_parameters: >-
+      Inputs named like `photo[caption]` arrive bundled in a sub-hash, `params[:photo]`.
+      Read it with `params.expect(photo: [:caption, :image])` and pass the result to
+      `.new` or `.update`. Every column that the form sends must be in that list: one left
+      out is quietly dropped, and passing `params.fetch(:photo)` straight to `.new` raises
+      `ActiveModel::ForbiddenAttributesError`. If you see "key not found" or "param is
+      missing", the action is fetching a name that the form no longer sends. See [Strong
+      Parameters](https://guides.rubyonrails.org/action_controller_overview.html#strong-parameters).
+    file_input: >-
+      An `<input type="file">` element lets the user pick a file from their device. Like
+      every other input, the crucial attribute is `name=""` — that determines the key the
+      uploaded file is stored under in the `params` hash.
+    multipart_form: >-
+      A file upload can't fit in a query string, so the form needs `method="post"` and
+      `enctype="multipart/form-data"` attributes — and since the browser will now send a
+      POST request, the route for the form's action must be defined with `post(...)`
+      instead of `get(...)` in `config/routes.rb`.
+    optional_file_param: >-
+      When the user doesn't choose a file, the browser leaves the file input out of the
+      request entirely, so `params.fetch("photo_param")` fails (in a test, often with a
+      400 Bad Request status instead of 200). Give `.fetch` a second argument to fall back
+      on, like `params.fetch("photo_param", "")`, and only use the file if one arrived.
+
+    # --- Numbers, dates, and randomness ---
+
+    round: >-
+      Ruby `Float`s have a [`.round()`
+      method](https://docs.ruby-lang.org/en/master/Float.html#method-i-round) that takes
+      the number of decimal places to keep: `3.14159.round(2)` returns `3.14`.
+    number_to_currency: >-
+      Rails has a view helper, `number_to_currency`, that formats a number as dollars:
+      `<%= number_to_currency(1208) %>` displays `$1,208.00`, with a comma every three
+      digits and two decimal places. Call it in the view template with the number as its
+      argument, and keep the instance variable a number in the action. See
+      [`number_to_currency` in the Rails
+      docs](https://api.rubyonrails.org/classes/ActionView/Helpers/NumberHelper.html#method-i-number_to_currency).
+    number_to_percentage: >-
+      Rails has a view helper, `number_to_percentage`, that adds a percent sign. It
+      doesn't multiply by 100 for you, and it keeps three decimal places unless you pass
+      `:precision`: `<%= number_to_percentage(4.12345, { :precision => 4 }) %>` displays
+      `4.1235%`. Call it in the view template, not in the action. See
+      [`number_to_percentage` in the Rails
+      docs](https://api.rubyonrails.org/classes/ActionView/Helpers/NumberHelper.html#method-i-number_to_percentage).
+    to_fs_currency: >-
+      Rails adds a `.to_fs(:currency)` method to numbers that returns a dollar-formatted
+      `String`: `1234.5.to_fs(:currency)` returns `"$1,234.50"`. See [`.to_fs` in The One
+      Ruby
+      Reference](https://learn.firstdraft.com/lessons/33-the-one-ruby-reference#to_fs).
+    to_fs_percentage: >-
+      Rails adds a `.to_fs(:percentage)` method to numbers that returns a `String` with a
+      percent sign. It doesn't multiply by 100 for you, and it keeps three decimal places
+      unless you pass `:precision`: `4.12345.to_fs(:percentage, { :precision => 4 })`
+      returns `"4.1235%"`. See [`.to_fs` in The One Ruby
+      Reference](https://learn.firstdraft.com/lessons/33-the-one-ruby-reference#to_fs).
+    date_as_is: >-
+      The test looks for the date the way Ruby prints a `Date` by default, like
+      `1987-04-12`. Display the column as it is, `<%= @the_person.dob %>`, rather than
+      reformatting it with `.strftime`.
+    time_ago: >-
+      Rails has a helper method for view templates, `time_ago_in_words`. Follow it with
+      the word "ago": `<%= time_ago_in_words(the_photo.created_at) %> ago`.
+    rand_float_range: >-
+      `rand` with a range returns a random number inside it, and the kind of number
+      follows the range: `rand(1..10)` returns whole numbers, while `rand(1.0..10.0)`
+      returns `Float`s like `7.38`. If the target shows decimals, convert both ends of the
+      range with `.to_f` first.
+    randomness: >-
+      This test involves randomness. If you're sure that your code is right and the test
+      failed anyway, you may have been unlucky: run it a couple more times before you
+      change anything.
+
+    # --- Models and queries ---
+
+    rails_generate_model: >-
+      Each table needs a model: a class named for one row, singular and capitalized, that
+      inherits from `ApplicationRecord`. `rails generate model` writes the model class in
+      `app/models/` and a migration for its table in one go: give it the model name and
+      each column with its type, for example `rails generate model Movie title:string
+      year:integer`, then run `rails db:migrate`.
+    add_column_migration: >-
+      The test assigns a foreign key, like `user_id`, that the table doesn't have yet. If
+      the error says "undefined method 'user_id='", add the column to the existing table
+      with a migration of its own: `rails generate migration AddUserIdToPhotos
+      user_id:integer`, then `rails db:migrate`. Check `db/schema.rb` to make sure the
+      column is there.
+    loop_over_records: >-
+      The test saves its own records and then looks for each one on the page, so the page
+      has to show whatever is in the table, not hard-coded content. In the action, put the
+      records in an instance variable, for example `@list_of_movies = Movie.all`. In the
+      template, loop over it with `.each` and print each record's columns inside the loop:
+      `<%= a_movie.title %>`.
+    show_one_record: >-
+      The URL ends with the record's ID, so the route needs a dynamic segment:
+      `get("/movies/:path_id", { :controller => "movies", :action => "show" })`. In the
+      action, look the record up with `Movie.where({ :id => params.fetch("path_id")
+      }).at(0)`, put it in an instance variable, and print its columns in the template.
+    associated_records: >-
+      To show the records that belong to this one, find them by their foreign key:
+      `Movie.where({ :director_id => @the_director.id })`. If the model has
+      `has_many(:movies, ...)`, then `@the_director.movies` does the same thing. Loop over
+      them in the template with `.each`.
+    foreign_key_one: >-
+      This record keeps the ID of the record it belongs to in a foreign key column. Use
+      that ID to look the other record up, and take it out of the relation with `.at(0)`:
+      `User.where({ :id => @the_post.author_id }).at(0)`. Then display its columns. (A
+      `belongs_to` association, if you've defined one, does the lookup for you.)
+    foreign_key_many: >-
+      The other table keeps this record's ID in a foreign key column. Find every row that
+      points here with `.where` on that column, for example `Post.where({ :author_id =>
+      @the_user.id })`, and loop over the result with `.each`. (A `has_many` association,
+      if you've defined one, does the same.)
+    join_table_lookup: >-
+      These two tables have no foreign key between them; a join table holds both IDs.
+      First find this record's rows in the join table, for example `Enrollment.where({
+      :student_id => @the_student.id })`. Then, for each of those rows, look up the record
+      on the other side by its foreign key, `Course.where({ :id => an_enrollment.course_id
+      }).at(0)`, and display it.
+    where_returns_relation: >-
+      The ID arrives in the URL's dynamic segment, so read it with
+      `params.fetch("path_id")`. `.where({ :id => the_id })` always returns a relation (a
+      list), even when only one record matches, so take the record out of it with `.at(0)`
+      before you call column methods like `.name` on it.
+    no_at_on_relation: >-
+      Outside the beginner projects, an `ActiveRecord::Relation` has no `.at` method, so
+      `matching_photos.at(0)` stops with "undefined method 'at' for an instance of
+      ActiveRecord::Relation". Use `matching_photos.first` or `matching_photos[0]`
+      instead, everywhere that the controller has `.at(0)`.
+    order_query: >-
+      Without `.order`, the database returns rows in no promised order. Add it to the
+      query in the action: `.order({ :title => :asc })` sorts A to Z, and `.order({
+      :created_at => :desc })` puts the newest first.
+    order_skip_nil: >-
+      To find the record with the latest or the earliest date, sort with `.order` and take
+      the first record with `.at(0)`: `{ :dob => :desc }` puts the latest date first, and
+      `{ :dob => :asc }` the earliest. Watch out for rows with no date: sorting `:desc`,
+      our database puts the `nil`s first, so leave them out beforehand with `.where.not({
+      :dob => nil })`.
+    ilike_search: >-
+      The search term arrives in `params[:q]`. Filter only when one was sent (`if
+      params[:q].present?`), with `where("title ILIKE ?", "%#{params[:q]}%")`: `%` matches
+      any characters (or none), so the term can be anywhere in the column, and `ILIKE`,
+      unlike `LIKE`, ignores capitalization. The `?` keeps the term itself out of the SQL.
+    define_scope: >-
+      A scope is a named query that you call on the class: `scope :published, -> {
+      where(status: "published") }` makes `Post.published` work, and returns a relation
+      that you can keep chaining. A scope that takes an argument names it in the lambda:
+      `scope :longer_than, ->(minutes) { where("duration > ?", minutes) }`. Two more
+      pieces that help: `where.not(column: nil)` leaves out the rows where a column is
+      empty, and an endless range like `where(year: 2000..)` means "2000 or later". See
+      [Scopes](https://guides.rubyonrails.org/active_record_querying.html#scopes).
+    class_method: >-
+      `def self.newest` inside a model defines a method that you call on the class itself,
+      `Post.newest`, rather than on one record. Inside it, you can call the class's own
+      scopes without the class name in front, and `.first` turns a sorted relation into a
+      single record.
+
+    # --- Associations and callbacks ---
+
+    define_association: >-
+      An association is a method that you define in the model with `has_many` or
+      `belongs_to`. For example, `has_many(:comments, { :class_name => "Comment",
+      :foreign_key => "photo_id" })` in `Photo` gives every photo a `.comments` method.
+      Name the association after the method that the test calls, point `:class_name` at
+      the other model, and point `:foreign_key` at the column that holds the ID.
+    belongs_to_association: >-
+      The model whose table holds the foreign key gets the `belongs_to`. Give it the
+      method name, the class of the record it returns, and the foreign key column:
+      `belongs_to(:author, { :class_name => "User", :foreign_key => "author_id" })`. Rails
+      can only guess the class when the method is named after the model (`user` for a
+      `User`), so for an `author` who is a `User`, `class_name` is required. See
+      [`class_name`](https://guides.rubyonrails.org/association_basics.html#class-name).
+    has_many_association: >-
+      The model that the foreign key points at gets the `has_many`. Give it the method
+      name, the class of the records it returns, and the foreign key column in their
+      table: `has_many(:posts, { :class_name => "Post", :foreign_key => "author_id" })`.
+      Rails guesses the foreign key from the model you're in (`user_id` in `User`), so
+      when the column has another name, `foreign_key` is required; and the method name
+      doesn't have to match the class, as in `has_many(:articles, ...)` with `class_name:
+      "Post"`. See
+      [`foreign_key`](https://guides.rubyonrails.org/association_basics.html#foreign-key).
+    has_many_through: >-
+      A many-to-many goes through the join table. First define the association to the join
+      table, and make sure that the join model `belongs_to` the far side. Then:
+      `has_many(:readers, { :through => :subscriptions, :source => :reader })`. `through`
+      names the association that gets you to the join table, and `source` names the
+      association on the join model that takes you the rest of the way. Rails can guess
+      `source` only when it matches this association's name in the singular (`readers` →
+      `reader`), so `has_many :featured_authors, through: :featured_posts` needs `source:
+      :author`. See [has_many
+      :through](https://guides.rubyonrails.org/association_basics.html#has-many-through).
+    scoped_has_many: >-
+      An association can carry a filter of its own: pass a scope (a lambda) right after
+      its name, as in `has_many :approved_reviews, -> { where(status: "approved") },
+      class_name: "Review"`. The name `approved_reviews` doesn't match any model, so
+      `class_name:` tells Rails which one it points at; without it, the test reports that
+      a model like `ApprovedReview` doesn't exist. Add `foreign_key:` if the column isn't
+      named after this model, and if the other model already has a scope or enum for the
+      filter, use it: `-> { approved }`. See [the association guide on
+      scopes](https://guides.rubyonrails.org/association_basics.html#scopes).
+    dependent_destroy: >-
+      When a record is deleted, the records that belong to it stay behind unless the
+      association says otherwise. Add `dependent: :destroy` to the `has_many` (for example
+      `has_many :comments, dependent: :destroy`) so that destroying the parent destroys
+      its children too.
+    counter_cache_option: >-
+      A `_count` column only changes if Rails is told to keep it up to date. Add
+      `counter_cache: true` to the `belongs_to` in the child model: with `belongs_to
+      :article, counter_cache: true` in `Comment`, Rails adds 1 to the article's
+      `comments_count` when a comment is created, and subtracts 1 when one is destroyed.
+      See
+      [counter_cache](https://guides.rubyonrails.org/association_basics.html#counter-cache).
+    read_counter_cache: >-
+      `photo.comments.count` runs `SELECT COUNT(*)` for every photo. The `comments_count`
+      column on photos is a counter cache that already holds that number, so the template
+      can print `photo.comments_count` instead.
+    before_save_callback: >-
+      `before_save :method_name` in a model runs that method every time a record is about
+      to be saved, on create and on update. Inside the method, assign with `self.column =
+      ...` (without `self.`, Ruby makes a local variable and leaves the record alone). To
+      run it only sometimes, give it a condition: `before_save :method_name, if: -> {
+      column.blank? }`. See [Active Record
+      Callbacks](https://guides.rubyonrails.org/active_record_callbacks.html).
+
+    # --- Saving, validations, and errors ---
+
+    form_did_not_save: >-
+      The test submitted the form, but the table didn't change. Fill in the form and
+      submit it yourself, and see what happens. "No route matches" means that the form's
+      `action=""` and `method=""` don't match a route in `config/routes.rb` (a
+      `method="post"` form needs a `post(...)` route). A `KeyError` ("key not found")
+      means that an input's `name=""` doesn't match a key that the action
+      `params.fetch`es. No error, but no change? Check that the action calls `.save`, and
+      that the record is valid: a failed validation (a foreign key that was never
+      assigned, say) stops the save, and `.errors.full_messages` says why.
+    destroy_action: >-
+      The link's `href=""` must match a route with a dynamic segment, like
+      `get("/delete_photo/:path_id", { :controller => "photos", :action => "destroy" })`.
+      In the action, look the record up with `params.fetch("path_id")` and `.at(0)`, call
+      `.destroy` on it, and `redirect_to` the list page. If you check the owner first,
+      compare like with like: `current_user == the_photo.owner` (two users) or
+      `current_user.id == the_photo.owner_id` (two IDs).
+    validates_presence: >-
+      The test leaves a field blank and expects no new record. Declare a validation in the
+      model, for example `validates(:title, { :presence => true })` in
+      `app/models/movie.rb`. Then `.save` returns `false` and inserts nothing. In the
+      action, check what `.save` returned, and when it's `false`, send the user back with
+      an alert (or render the form again) instead of carrying on.
+    validates_uniqueness: >-
+      Validations go in the model. `validates(:username, { :presence => true })` refuses
+      to save a row whose `username` is blank, and `validates(:username, { :uniqueness =>
+      true })` refuses one whose `username` another row already has. The test looks for
+      the error message that each built-in validation adds ("can't be blank", "has already
+      been taken"), so use them rather than writing your own check.
+    length_validation: >-
+      The test checks the model, not the form: a limit that only the page shows (a
+      character counter, say) doesn't stop a longer value from being saved. Add a
+      `length:` option to the attribute's validation in the model, for example `validates
+      :title, presence: true, length: { maximum: 50 }`. A value that's too long then gets
+      the error "is too long (maximum is 50 characters)".
+    errors_full_messages: >-
+      When `.save` returns `false`, the record's `.errors.full_messages` says why, as an
+      `Array` of `String`s like `"Title can't be blank"`. Print it to find out why a
+      record won't save, and show it to the user by sending it along with the redirect:
+      `redirect_to("/movies/new", { :alert => the_movie.errors.full_messages.to_sentence
+      })`.
+    render_to_keep_input: >-
+      When a record fails its validations (for example `validates :caption, presence:
+      true` in the model), the sad branch of the action must `render` the form's template
+      again, not `redirect_to` it: a redirect starts a brand new request, and whatever the
+      user typed is gone. Keep the record in an instance variable, show its
+      `.errors.full_messages` in the template, and fill each input in from it.
+    flash_messages: >-
+      Messages sent along with a redirect, like `redirect_to("/", { :notice => "Movie
+      created successfully." })` or the same with `:alert`, and Devise's own messages,
+      only appear if a template displays them. Display both `notice` and `alert` in
+      `app/views/layouts/application.html.erb`, above the `yield`, so that every page
+      shows them, for example `<% if notice.present? %><%= notice %><% end %>`.
+    notice_in_alert: >-
+      The test looks for the notice inside an element with both the `alert` and
+      `alert-success` classes, our stylesheet's green box: a `<div class="alert
+      alert-success">` around `<%= notice %>` in the application layout. Wrap it in `<% if
+      notice.present? %>` so that an empty box doesn't show on every page.
+
+    # --- Sign-in and access ---
+
+    devise_setup: >-
+      These tests sign in first, so they need Devise and its `User` model; until then they
+      stop with "uninitialized constant User". Add `gem "devise"` to the `Gemfile`, run
+      `bundle install`, then `rails generate devise:install`, `rails generate devise
+      User`, and `rails db:migrate`, and restart your server.
+    devise_user: >-
+      Let Devise write the users table: add `gem "devise"` to the `Gemfile`, run `bundle
+      install`, then `rails generate devise:install`, `rails generate devise User
+      username:string`, and `rails db:migrate`. Devise stores a scrambled
+      `encrypted_password`, never the password itself.
+    devise_views: >-
+      Copy Devise's view templates into your app with `rails generate devise:views -b
+      form_for`. The sign-up form is `app/views/devise/registrations/new.html.erb` and the
+      edit form is `edit.html.erb` in the same folder; add an `f.label :username` and an
+      `f.text_field :username` to both.
+    username_field: >-
+      Copy Devise's view templates into your app with `rails generate devise:views -b
+      form_for`, then add an `f.label :username` and an `f.text_field :username` to
+      `app/views/devise/registrations/new.html.erb`.
+    permit_username: >-
+      Devise ignores form fields that it hasn't been told to accept. In
+      `ApplicationController`, permit `:username` for `:sign_up` (and `:account_update`)
+      with `devise_parameter_sanitizer.permit`.
+    require_sign_in: >-
+      Add `before_action(:authenticate_user!)` to `ApplicationController` so that every
+      page requires the visitor to sign in first. If a few pages should stay open to
+      everyone, skip the check in just those controllers with
+      `skip_before_action(:authenticate_user!, { :only => [...] })`.
+    skip_sign_in: >-
+      With `before_action(:authenticate_user!)` in `ApplicationController`, every page
+      requires signing in. The target lets anyone see the lists of photos and users: at
+      the top of those two controllers, add `skip_before_action(:authenticate_user!, {
+      :only => [:index] })`.
+    root_route: >-
+      The homepage, `/`, needs a route of its own in `config/routes.rb`, pointing at the
+      action that the homepage should show, for example `get("/", { :controller =>
+      "photos", :action => "index" })`. (Devise sends users to `/` after they sign in, so
+      an app with sign-in needs this route too.)
+    sign_out_button: >-
+      Devise's sign-out route expects a DELETE request, which a link can't make. Use a
+      `<form action="/users/sign_out" method="post">` containing `<input type="hidden"
+      name="_method" value="delete">` and a `<button>` with the text "Sign out" (with
+      helper methods, `<%= button_to "Sign out", destroy_user_session_path, method:
+      :delete %>` writes that form for you). Keep it a `<button>` when you restyle it: it
+      can take classes like `nav-link` or `dropdown-item` and still sign the user out.
+    signed_in_or_not: >-
+      Devise's `current_user` is `nil` when nobody is signed in. To show something only to
+      signed-in users, or only to visitors, wrap it in `<% if current_user.present? %> ...
+      <% else %> ... <% end %>`: a "Sign out" button for a signed-in user, say, and "Sign
+      in" and "Sign up" links for everyone else. Links that belong on every page, like a
+      navbar's, go in the layout, `app/views/layouts/application.html.erb`.
+    show_current_user: >-
+      Devise's `current_user` method returns the signed-in user in any view template, so
+      `<%= current_user.email %>` displays their email. Put it inside the navbar's
+      `<nav>`, and wrap it in `<% if user_signed_in? %>`, since `current_user` is `nil`
+      when no one is signed in.
+    current_user_owner: >-
+      Don't ask the user who they are with a form field. In the action, fill in the
+      foreign key (for example `user_id` or `owner_id`) from `current_user.id`. Anything
+      else that the action needs, like the ID of the record that the new one belongs to,
+      can travel in an `<input type="hidden">`.
+    only_your_own: >-
+      Hiding a link isn't protection, since anyone can type a URL. In the action, check
+      that the record belongs to `current_user` before you show, change, or delete it.
+      Either look for it among the user's own records (for example
+      `current_user.quizzes.where({ :id => the_id }).at(0)`, if you defined that
+      association; `nil` means it isn't theirs), or compare the user ID that it points at
+      with `current_user.id`. Sometimes that ID is one step away, like
+      `the_message.quiz.user_id`. If it isn't theirs, `redirect_to` another page with an
+      alert instead.
+    hide_unauthorized_buttons: >-
+      Only show a button or link to the people who may use it. Wrap it in an `if` that
+      compares the signed-in user with the record's owner, like `<% if current_user ==
+      the_photo.owner %>` (when nobody is signed in, `current_user` is `nil`, which never
+      equals a user), or, with ActionPolicy, `<% if allowed_to?(:edit?, the_photo) %>`.
+      Hiding it isn't protection on its own, though: the action has to check too.
+    restrict_routes: >-
+      Each `resources` line makes all seven routes (index, show, new, create, edit,
+      update, destroy) unless you say otherwise, so every scaffolded page is open to
+      anyone who guesses its URL. Keep only the ones the app uses: `resources :reviews,
+      only: [ :create, :destroy ]`, or `resources :books, except: [ :index ]`. A URL with
+      no route gets a 404. (If a catch-all route like `get ":username"` picks the URL up
+      instead, its action should answer 404 when nothing matches, as `find_by!` does.) See
+      [Restricting the routes
+      created](https://guides.rubyonrails.org/routing.html#restricting-the-routes-created).
+    action_policy_authorize: >-
+      Call `authorize! @record` as the first line of the action, before anything is shown,
+      saved, or deleted. ActionPolicy finds the policy named after the record's class
+      (`ReviewPolicy` for a `Review`), calls the rule named after the action (`edit?` in
+      `edit`), and raises `ActionPolicy::Unauthorized` if it returns false. To check a
+      different rule or record, say so: `authorize! @review.book, to: :show?`.
+    action_policy_method: >-
+      A policy is a class in `app/policies/` named after its model (`ReviewPolicy` for
+      `Review`) that inherits from `ApplicationPolicy` (which inherits from
+      `ActionPolicy::Base`). Each rule is a method named after an action, with a `?`, that
+      returns `true` or `false`; inside it, `user` is the signed-in user and `record` is
+      the object being checked. For example, `edit?` could return `user == record.author`,
+      and `update?` could just call `edit?`. A rule can ask another policy, too:
+      `allowed_to?(:show?, record.book)`. A rule that you haven't defined answers `false`.
+      See the [ActionPolicy docs](https://actionpolicy.evilmartians.io/#/quick_start).
+    action_policy_rescue: >-
+      When a check fails, ActionPolicy raises `ActionPolicy::Unauthorized`. Catch it once,
+      in `ApplicationController`, with `rescue_from ActionPolicy::Unauthorized, with:
+      :user_not_authorized`, and in that method set `flash[:alert]` and `redirect_back
+      fallback_location: root_url`. Use the target's alert text word for word, and make
+      sure the layout displays `alert`.
+
+    # --- Styling with component classes ---
+
+    classes_must_match: >-
+      The test finds elements by their classes and by what they're inside of. In the
+      target, right-click the element and choose "Inspect" to see its `class` attribute
+      and the elements around it, and match both. In the failure message, "inside" means
+      anywhere within, and "directly inside" means a child, with nothing in between.
+    card_per_record: >-
+      The test looks for one card, our stylesheet's `<div class="card">`, for each record.
+      Write the card for one record first, then wrap it in the `.each` loop. If the cards
+      sit in a grid, the loop goes inside the grid's `<div>`, so that every card is
+      directly inside the one grid (a grid only arranges the elements directly inside it).
+      Check the target for what goes inside each card, such as a `<header>` for the title.
+    btn_classes: >-
+      `btn` gives an element the shape of a button. A second class picks its color
+      (`btn-primary`, `btn-outline-secondary`, `btn-danger`, `btn-link`, and so on), and
+      an optional third one picks its size (`btn-sm` or `btn-lg`). They all go in one
+      `class=""`, separated by spaces: `<a href="/photos/new" class="btn btn-success
+      btn-lg">Add a photo</a>`. A link stays an `<a>` with the same `href`; only its
+      classes change.
+    alert_classes: >-
+      An alert is a `<div>` with the class `alert` and a second class for its color:
+      `alert-success`, `alert-danger`, `alert-warning`, or `alert-info`, as in `<div
+      class="alert alert-success">Photo saved.</div>`. For flash messages, the `<div>`
+      around `notice` in the layout gets `alert alert-success`, and the one around `alert`
+      gets `alert alert-danger`.
+    badge_classes: >-
+      A badge is a `<span>` with the class `badge` and a color class, such as
+      `text-bg-secondary` or `text-bg-light`, inside the element that it labels (a
+      heading, a card, or a tab's button): `<h2>Comments <span class="badge
+      text-bg-secondary">3</span></h2>`. To show a count from the database, print it
+      instead of typing it in, for example `<%= @list_of_comments.count %>`.
+    flex_row: >-
+      `flex` goes on the element that holds the row, and puts the elements directly inside
+      it side by side. The classes that arrange them go on that same element:
+      `justify-between` (pushed to the two ends), `justify-center`, `items-center` (lined
+      up by their middles), and `gap-4` or `gap-8` (space between them). The test looks
+      for the items directly inside it, so don't wrap them in another element.
+    grid_columns: >-
+      `grid` goes on the element that holds the items, and arranges only the elements
+      directly inside it. Say what happens on a phone first, and then what changes on
+      wider screens: `class="grid grid-cols-1 md:grid-cols-3 gap-4"` is one column, and
+      three from a tablet's width up. An item that should take up two columns gets
+      `md:col-span-2`.
+    tabs_pattern: >-
+      Copy the tabs pattern from the lesson on component classes, and then change its
+      content. Everything goes inside a `<div data-controller="tabs">`. The tabs are
+      buttons with the class `nav-link`, in a `<ul class="nav nav-underline">`. Each panel
+      is a `<div>` with the class `tab-pane`, and the tab and the panel that start out
+      shown also get the class `active`.
+    dropdown_pattern: >-
+      Copy the dropdown pattern from the lesson on component classes, and then change its
+      content. A `<div class="dropdown" data-controller="dropdown">` holds a button with
+      `data-action="click->dropdown#toggle"` directly inside it, and a `<ul
+      class="dropdown-menu" data-dropdown-target="menu">`. Each item in the menu gets the
+      class `dropdown-item`, whether it's an `<a>` or a `<button>` inside a `<form>`.
+    modal_pattern: >-
+      Copy the modal pattern from the lesson on component classes, and then change its
+      content. One element with `data-controller="modal"` must hold both the button that
+      opens the modal (`data-action="click->modal#open"`) and the `<dialog
+      data-modal-target="dialog">`. Inside the `<dialog>` goes an ordinary card, and the
+      form goes inside the card. There are three working examples at
+      [appdev-modal-examples.matchthetarget.com](https://appdev-modal-examples.matchthetarget.com/).
+    navbar_header_nav: >-
+      Our stylesheet draws a navbar from plain elements: a `<header>` above `<main>`,
+      holding a `<nav>` with a `<ul>` of links. Put it in the application layout (or a
+      partial that the layout renders) so that it's on every page. The test looks for the
+      link inside `header nav`.
+
+    # --- JavaScript, Stimulus, and Turbo ---
+
+    js_console_errors: >-
+      This test runs your JavaScript in a real (headless) Chrome, so it fails if the
+      script never runs or stops partway. Open the page in Chrome, open the JavaScript
+      console (View > Developer > JavaScript Console), refresh, and look for red errors.
+      One error stops the rest of that script, so a typo near the top can break everything
+      below it.
+    stimulus_controller_naming: >-
+      Stimulus only connects a controller when the name in `data-controller` matches its
+      file: drop `_controller.js` and turn underscores into hyphens, so
+      `app/javascript/controllers/character_counter_controller.js` is
+      `data-controller="character-counter"`. Targets, values, classes, and actions repeat
+      that name (`data-character-counter-target="input"`,
+      `input->character-counter#update`), and targets have to be inside the element that
+      has `data-controller`. A misspelled name raises no error; nothing happens. See
+      [identifiers](https://stimulus.hotwired.dev/reference/controllers#identifiers).
+    data_attributes_helper: >-
+      The `data:` option of a Rails view helper becomes `data-` attributes on the element,
+      with underscores turned into dashes: `data: { controller: "color-picker",
+      color_picker_shade_value: "dark" }` writes `data-controller="color-picker"
+      data-color-picker-shade-value="dark"`. In `collection_select`, it goes in the last
+      hash (the HTML options), after the hash that holds `prompt:`; anywhere else it's
+      ignored. View Source to check.
+    dom_id: >-
+      Rails' `dom_id` helper turns a record into an `id` that is unique on the page:
+      `dom_id(an_item)` returns `"item_15"`. Use it on the element that the loop repeats,
+      `<li id="<%= dom_id(an_item) %>">`, so that every row keeps the same `id` from one
+      page load to the next.
+    turbo_method_delete: >-
+      A link normally sends a GET request. With Turbo, an `<a>` can send a different verb:
+      add `data-turbo-method="delete"` to it. Add `data-turbo-confirm="Delete this item?"`
+      too, and the browser asks the user to confirm before it sends anything.
+    delete_route: >-
+      Declare the route with `delete(...)` instead of `get(...)` in `config/routes.rb`,
+      for example `delete("/delete_item/:path_id", { :controller => "items", :action =>
+      "destroy" })`. Then visiting the URL (a GET request) no longer reaches the action;
+      only a link with `data-turbo-method="delete"`, or a form that sends DELETE, does.
+    details_ontoggle: >-
+      A `<details>` element fires a `toggle` event whenever it opens or closes, and inside
+      the handler `this.open` is `true` while it's open. JavaScript's
+      `toggleAttribute(name, force)` adds the attribute when `force` is true and removes
+      it when `force` is false. Put the two together in the `ontoggle=""` attribute.
+    turbo_frame_ids: >-
+      A Turbo Frame keeps only the frame with the same id from the page it loads, and
+      drops the rest. Wrap the matching part of both pages in `turbo_frame_tag` with the
+      same id (`turbo_frame_tag review` uses `dom_id(review)`), and point a link or form
+      at a frame with `data: { turbo_frame: "..." }`. A frame with `target: "_top"` sends
+      its links and forms to the whole page unless they say otherwise. See [Turbo
+      Frames](https://turbo.hotwired.dev/handbook/frames).
+    turbo_stream_format: >-
+      A Turbo form submission asks for a Turbo Stream (its `Accept` header starts with
+      `text/vnd.turbo-stream.html`). Add `format.turbo_stream` inside the action's
+      `respond_to`, above `format.html`, and create a template named after the action,
+      like `app/views/reviews/create.turbo_stream.erb`. Keep the `format.html` line: a
+      request without Turbo should still get its redirect. See [Turbo
+      Streams](https://turbo.hotwired.dev/handbook/streams).
+    turbo_stream_not_redirect: >-
+      The test marks the page's `<body>` before it acts and checks that the mark is still
+      there afterwards. A Turbo Stream response edits the page in place, so the mark
+      survives; a redirect or a full-page render swaps in a new `<body>`, and the mark is
+      gone. In the action, use `respond_to` with a `format.turbo_stream` branch next to
+      `format.html` (on both sides of the `if`, when the save can fail), and put the
+      stream actions in a template named after the action, like `create.turbo_stream.erb`.
+    turbo_stream_targets: >-
+      Each `turbo_stream.replace`, `update`, `append`, or `remove` changes the element
+      whose `id` it names, so the page needs an element with exactly that id. Use the same
+      `dom_id` call in both places: `dom_id(review)` gives `review_42`, and
+      `dom_id(review, :likes)` gives `likes_review_42` (`turbo_stream.remove @review` uses
+      `dom_id(@review)` for you). To change many elements at once, `replace_all` takes a
+      CSS selector instead of an id, like `".follow_user_10"`. The failure message shows
+      the target the test expected.
+    turbo_counter_reload: >-
+      A counter cache updates the parent's `_count` column in the database, but not a copy
+      of the parent that's already loaded in memory. Before a stream renders the new
+      count, read the parent again with `.reload`, for example `@comment.post.reload`.
+    turbo_422: >-
+      When the record doesn't save, still answer with a stream, but with the status 422:
+      `format.turbo_stream { render :create, status: :unprocessable_content }`. In the
+      template, `@review.persisted?` tells you which case you're in, so a failed save can
+      send back the form, with its errors displayed, instead of the new record.
+    turbo_broadcast: >-
+      A broadcast reaches every page that subscribes to the stream with `<%=
+      turbo_stream_from post %>`. The model sends it from a callback, for example
+      `broadcast_replace_later_to post, target: ..., partial: ..., locals: { ... }` (the
+      test runs the background job that `_later_` queues). Use one `after_commit
+      :method_name, on: [ :create, :destroy ]` to cover both: two commit callbacks that
+      name the same method keep only the last one. Broadcast only what looks the same to
+      every viewer, since a callback doesn't know who `current_user` is.
+    respond_to_formats: >-
+      `respond_to do |format|` lets one action answer each format differently. Code inside
+      `format.json { ... }` only runs for `.json` requests, so a `.limit(...)` there
+      leaves the HTML page alone, while a `.limit` before `respond_to` applies to both. A
+      `format.json` block that doesn't call `render` still renders the action's
+      `.json.jbuilder` view.
+    jbuilder_keys: >-
+      The JSON comes from the `.json.jbuilder` views, and the index renders the record's
+      partial (like `_photo.json.jbuilder`) once per record, so that is the file to
+      change. `json.extract! photo, :id, :caption` copies only the columns that you list,
+      and `json.comments_count photo.comments.size` adds a key of your own, named after
+      the method, set to the value of the Ruby expression. Visit the `.json` URL in your
+      browser to check.
+
+    # ================= Hints written for one project =================
+
+    # --- ai-chat-macros ---
+
+    canned_grader_macros: >-
+      `grade` never calls the real OpenAI API (so it never spends your credits). It
+      intercepts your app's request and replies with a canned estimate: 47 g carbs, 23 g
+      fat, 31 g protein, 519 kcal total. With a JSON Schema, it fills in each number by
+      its key's name, so name the keys after what they hold (`carbs`, `fat`, `protein`,
+      `total_calories`); a key it can't place gets 42. If your page shows an error, check
+      that you `.fetch` the same keys out of the parsed response.
+    data_uri: >-
+      The [file_to_data_uri gem](https://github.com/firstdraft/file_to_data_uri) converts
+      an uploaded file into a data URI with `DataURI.convert(...)`. Embed the result
+      directly in the `src=""` attribute of an `<img>` tag to display the photo without
+      saving it anywhere.
+
+    # --- ai-web-search ---
+
+    canned_grader_news: >-
+      `grade` never calls the real OpenAI API and never runs a real web search (so it
+      never spends your credits). It intercepts your app's request and replies with a
+      canned set of three made-up articles, all on example.com: "City library unveils
+      robot book sorter", "Community garden doubles harvest with sensor network", and
+      "Local coders release open-source bus tracker". If your page shows an error, check
+      that you are sending your JSON Schema along with the request and using `.fetch` to
+      dig each value out of the parsed response.
+    dig_out_reports: >-
+      With a schema attached, `@api_response.fetch(:content)` is a `Hash` with one key,
+      `:reports`, holding an `Array` of `Hash`es (one per article). Loop over
+      `.fetch(:reports)` and use `.fetch(:title)`, `.fetch(:summary)`, `.fetch(:date)`,
+      and `.fetch(:url)` on each one. The keys are `Symbol`s, not `String`s.
+    generate_model: >-
+      Generate the model and its table with `rails generate model Report title:string
+      summary:text date:date url:string`, then run `rails db:migrate`. Check
+      `db/schema.rb` to confirm the `reports` table and its four columns exist.
+    save_each_report: >-
+      For each `Hash` in the `:reports` array, create a `Report.new`, assign its `title`,
+      `summary`, `date`, and `url` from the hash, and call `.save`. The date arrives as a
+      `String` like "2026-09-01"; ActiveRecord converts it to a `Date` for the column.
+      Then `redirect_to("/")` so the feed shows the saved reports.
+
+    # --- dice-roll-2-rails, dice-roll-3-dynamic-routes ---
+
+    dice_rolls_list: >-
+      The test looks for one `<li>` per die inside a `<ul>`, each holding the number
+      rolled: two for `/dice/2/6`, five for `/dice/5/4`. Build an `Array` of rolls in the
+      action (`rand(1..6)` rolls one six-sided die), store it in an instance variable, and
+      loop over it in the template with `.each`, writing one `<li>` per roll. The test
+      counts every `<li>` inside any `<ul>` on the page, so a `<ul>` of navigation links
+      in your layout would throw the count off.
+
+    # --- dice-roll-4-forms ---
+
+    dice_form_process_roll: >-
+      The test skips your form and visits `/process_roll?dice_param=5&sides_param=4` (with
+      random numbers) directly. So you need a `get("/process_roll", ...)` route, and an
+      action that reads both numbers with `params.fetch("dice_param")` and
+      `params.fetch("sides_param")`. The heading is the two numbers with a "d" between
+      them, like `5d4`.
+    dice_form_reroll_link: >-
+      The test looks for a link whose text reads like `Roll 5d4 again`, with this
+      request's two numbers embedded. To roll the same dice again, its `href=""` needs the
+      same path and query string as the page you're on,
+      `/process_roll?dice_param=...&sides_param=...`, with the numbers embedded using `<%=
+      %>` tags.
+
+    # --- exchange-rates ---
+
+    canned_grader_exchange_rates: >-
+      `grade` never calls the real exchangerate.host API (or Prepend.me). It intercepts
+      your app's requests to the `/list` and `/convert` endpoints and replies with canned
+      data: a list of only seven currencies (AED, AFN, ALL, AMD, ANG, AOA, and TMT), and a
+      rate of 0.339787 for every pair. So your pages must draw the symbols and the rate
+      from the parsed response rather than hard-code them. If this test shows an error,
+      check the API URL in your action and how you dig into the parsed `Hash`: the symbols
+      are the `.keys` of `"currencies"`, and the rate is under `"result"`.
+
+    # --- getting-started-with-scaffolds ---
+
+    draft_resource_movies: >-
+      This project starts as an empty Rails app, so nothing works until the movies
+      resource exists. Generate it as the lesson does: add `gem "draft_generators"` to the
+      `Gemfile`, run `bundle install`, then `rails generate draft:resource Movie
+      title:string description:text` and `rails db:migrate`.
+    scaffolds_movie_copy: >-
+      The tests click buttons with exactly the copy "Create Movie" and "Update Movie"
+      (capital M) and, after creating, look for "Movie was successfully created" on the
+      page. The generator wrote "Create movie", "Update movie", and "Movie created
+      successfully.", so change all three, and make sure that the layout displays
+      `notice`.
+
+    # --- helper-methods-part-3 ---
+
+    helper_methods_3_directors: >-
+      The test only checks that `/directors` loads for a signed-in user. Generate the
+      whole resource with Rails' scaffold generator, `rails generate scaffold Director
+      name dob:date bio:text`, then run `rails db:migrate`.
+    helper_methods_3_trash_icon: >-
+      The test looks for an `<i>` whose `class` is exactly `fa-regular fa-trash-can`, Font
+      Awesome's trash can, with no other classes on it. Put it inside the delete button by
+      giving `button_to` a block instead of a text argument.
+
+    # --- json-api-bookstore ---
+
+    bookstore_author_select: >-
+      The Author dropdown should start out with only the book's current author (and none,
+      for a new book); Tom Select fetches the rest from `/authors.json` as you type. In
+      `collection_select`, replace the list of every author with a list that holds just
+      `book.author` (`.compact` drops the `nil` that a new book has).
+    tom_select_files: >-
+      These tests read your files rather than running the JavaScript.
+      `config/importmap.rb` needs a pin named "tom-select" (pin the jsDelivr `+esm` URL
+      that the lesson gives; `bin/importmap pin tom-select` downloads a file that can't
+      load), and `app/javascript/controllers/search_select_controller.js`, with exactly
+      that file name, must import it with `import TomSelect from "tom-select"`.
+
+    # --- minimal-js ---
+
+    minimal_js_fizzbuzz: >-
+      The test expects exactly 100 `<li>`s inside `<ol id="fizzbuzz">`, in order, each
+      holding the number, `fizz`, `buzz`, or `fizzbuzz` (capitalization doesn't matter).
+      In the `<script>` in `app/views/misc/home.html.erb`, loop from 1 to 100 and insert
+      one `<li>` per number with `insertAdjacentHTML("beforeend", ...)`. Check for
+      multiples of both 3 and 5 before checking 3 or 5 alone, or 15 will come out as plain
+      `fizz`.
+    minimal_js_highlight: >-
+      The test clicks Chicago (`<li id="ord">`) twice: the first click has to add the
+      class `highlight`, and the second has to take it away. Put your code inside the
+      `<script>` at the bottom of `app/views/misc/home.html.erb` (code typed in the
+      console is gone on the next refresh), register a `click` listener on each city with
+      `addEventListener`, and call `classList.toggle("highlight")` on `event.target`.
+      `classList.add` would pass the first click and fail the second.
+    minimal_js_six_cities: >-
+      The test expects exactly six `<li>`s inside `<ul id="cities">`, the ones that came
+      with the starter, with Chicago among them. If you added or removed a city while
+      experimenting (with `insertAdjacentHTML` or `.remove()` in the `<script>`, say),
+      take that line out. Experiments like that belong in the JavaScript console, where a
+      refresh undoes them.
+
+    # --- movie-embeddings ---
+
+    embed_description: >-
+      The test calls `embed_description!` on a movie, so define that method in
+      `app/models/movie.rb`. Inside it, `RubyLLM.embed(...)` sends text to the embeddings
+      API, and `.vectors` on what comes back is the `Array` of 1536 `Float`s. Embed the
+      movie's own `description` and save that `Array` in `description_embedding` with
+      `update!`. (If you see `uninitialized constant RubyLLM`, the `ruby_llm` gem isn't in
+      the `Gemfile` yet; add it and `bundle install`.)
+    has_neighbors: >-
+      In `app/models/movie.rb`, add `has_neighbors :description_embedding`. That line is
+      what gives every movie the `nearest_neighbors` method.
+    no_embedding_yet: >-
+      A movie whose `description_embedding` is `nil` can't have neighbors yet. Check for
+      `nil` before asking for them (return an empty Array or `Movie.none`), so the page
+      still renders.
+    search_form: >-
+      The form on `/movies` should use `method="get"` and have an `<input name="query">`,
+      so that the search ends up in the URL as `/movies?query=...` and the index action
+      can read `params[:query]`.
+    search_results: >-
+      Only search when there is a query: if `params[:query].present?`, embed it the same
+      way you embed a description, `RubyLLM.embed(params[:query]).vectors`, and ask the
+      class for the movies nearest to that vector,
+      `Movie.nearest_neighbors(:description_embedding, query_vector, distance: "cosine")`.
+      When there's no query, keep listing every movie, as the page did before.
+    similar_movies: >-
+      On a record, `movie.nearest_neighbors(:description_embedding, distance: "cosine")`
+      returns the other movies, nearest first, and leaves the movie itself out. Call
+      `.first(5)` on it and loop over the result in the show template.
+    vector_column: >-
+      The `neighbor` gem adds a `vector` column type to Rails. Add the gem, run `rails
+      generate neighbor:vector` and `rails db:migrate` to enable the extension, then add
+      the column in a migration of its own with `add_column :movies,
+      :description_embedding, :vector, limit: 1536`.
+
+    # --- omnicalc-1-forms-practice ---
+
+    monthly_payment_units: >-
+      Most wrong payments come down to units. The APR arrives as a yearly percentage, like
+      `3.24`: divide it by 100 for a rate, then by 12 for the monthly rate. The term
+      arrives in years: multiply it by 12 for the number of monthly payments. Put the
+      numerator and the denominator in their own instance variables and print them on the
+      results page while you compare them with a calculation by hand.
+
+    # --- oscar-party-3-forms, oscar-party-4-associations, oscar-party-pagination, oscar-party-ransack ---
+
+    oscar_backdoor_env: >-
+      If this test fails with `KeyError` and `key not found: "ADMIN_USERNAME"`,
+      `BackdoorController` is reading its username and password from environment variables
+      that aren't set. Create the `.env` file at the root of your project with
+      `ADMIN_USERNAME` and `ADMIN_PASSWORD`, as the lesson shows. (The tests skip the
+      password prompt, but the controller still needs the variables to load.)
+    oscar_backdoor_labels: >-
+      The backdoor has a form for directors and a form for actors, and both ask for a
+      first and a last name. To tell them apart, the test fills in each input by its full
+      label text, as on the target: "Director First Name", "Director Last Name", "Actor
+      First Name", and "Actor Last Name". A label that says only "First Name" isn't
+      enough. The edit pages use the same labels.
+
+    # --- oscar-party-pagination ---
+
+    page_param: >-
+      Every list page needs its own pagination. In the action that renders this page, hand
+      the ordered query to `pagy` and loop over the records it hands back: `@pagy,
+      @list_of_movies = pagy(ordered_movies)`. `pagy` reads the page number from
+      `params[:page]` by itself, so `?page=2` then shows the next ten. (If `pagy` is an
+      undefined method, add `include Pagy::Method` to `ApplicationController`.)
+    per_page: >-
+      The test makes 12 records and expects 10 on the first page. Pagy shows 20 per page
+      unless you tell it otherwise, so with 12 you'd see them all: set
+      `Pagy::OPTIONS[:limit] = 10` in `config/initializers/pagy.rb` (and restart your
+      server), or pass `limit: 10` to the `pagy` method. If all 12 still show, the
+      template is looping over the original list instead of the records that `pagy` hands
+      back.
+    series_nav: >-
+      The test looks for a link whose `href` contains `page=2`. Add the page links after
+      the list in the view template with `<%== @pagy.series_nav %>`: two equals signs, so
+      that the HTML Pagy generates isn't escaped (with `<%=`, the tags show up as text,
+      and there's no link to click).
+
+    # --- oscar-party-ransack ---
+
+    ransack_in_action: >-
+      Filters arrive in the query string, like `/movies?q[year_gteq]=2015`, whether they
+      come from your form or are typed into the address bar. The index action has to build
+      its list with Ransack: `@q = Movie.ransack(params[:q])`, then `@q.result` (with your
+      `.order` chained on) in place of `Movie.all`. Try the URL from the test in your own
+      app: if the list doesn't change, the action isn't using `@q.result` yet. The
+      directors and actors index actions need the same change.
+    ransack_input_names: >-
+      Ransack builds each input's `name=""` from the column and the predicate you give the
+      form builder. `f.text_field :title_cont` produces `<input name="q[title_cont]">`, so
+      a filter on part of the title must be named `q[title_cont]`, a lower bound on the
+      year `q[year_gteq]`, and so on. Check the rendered HTML with View Source.
+    ransackable_associations: >-
+      The test visits `/movies?q[director_last_name_cont]=gerw`. To filter a table by a
+      column of an associated table, Ransack needs three things: the association itself
+      (`belongs_to(:director, ...)` in `Movie`), its name in the model's
+      `self.ransackable_associations` method (`["director"]`), and the column in the
+      associated model's own `self.ransackable_attributes` (`"last_name"` in `Director`).
+      The name in the query string is then the association, the column, and the predicate:
+      `director_last_name_cont`.
+    ransackable_attributes: >-
+      Ransack only filters by the columns that you list in the model's
+      `self.ransackable_attributes` method, and ignores any other column in the query
+      string. Allow only the columns that the interface needs: `title`, `year`, and
+      `result` in `Movie`; `first_name` and `last_name` in `Director` and `Actor`. If the
+      page says "Ransack needs Movie associations explicitly allowlisted", define
+      `self.ransackable_associations` in `Movie` too: Ransack checks whether a name it
+      doesn't recognize, like `description`, is an association.
+
+    # --- pg-industrial, pg-industrial-auth, pg-turbo ---
+
+    pg_associations_lesson: >-
+      Every association these tests check is written out in Photogram Industrial, Part 1
+      (Photo's `owner`, User's `own_photos`) and Part 2 ("Configure the ... model" and
+      "Building out the associations"). Compare your model with the lesson's, line by
+      line: the association's name, `class_name:`, `foreign_key:`, the scope, `through:`,
+      and `source:` all have to match.
+    pg_comment_errors: >-
+      A blank comment must not save, so Comment needs `validates :body, presence: true`.
+      When the save fails, CommentsController#create should send the user back where they
+      were, with `redirect_back fallback_location: root_path, alert:
+      @comment.errors.full_messages.to_sentence`, instead of rendering the scaffold's
+      new-comment page. The layout then shows "Body can't be blank" as an alert.
+    pg_comment_form: >-
+      Each photo card ends with `<%= render "comments/form", comment: photo.comments.build
+      %>`: a `form_with(model: comment)` with a hidden `photo_id` field, a `text_area
+      :body` (its `name` is `comment[body]`), and the default submit button, "Create
+      Comment". The form doesn't send an author, so CommentsController#create sets
+      `@comment.author = current_user`, then `redirect_back`.
+    pg_comment_partial: >-
+      Each comment is an `<li>` from `comments/_comment.html.erb`, with its body and a
+      `...` menu holding an "Edit" link (`edit_comment_path(comment)`) and a "Delete"
+      `button_to` (`method: :delete`). The test looks for them inside the comment's
+      `<li>`. After a delete, CommentsController#destroy should `redirect_back`; after an
+      edit, `update` redirects to `root_url`, which shows the feed.
+    pg_devise_views: >-
+      Almost every test signs in first, by clicking a "Sign in" button on /users/sign_in,
+      and the sign-up test fills in a "Username" field on /users/sign_up. Devise's own
+      pages say "Log in" and have no username field. Copy its views into your app with
+      `rails g devise:views users -v registrations sessions`, set `config.scoped_views =
+      true` in `config/initializers/devise.rb` so that Devise looks in `app/views/users/`,
+      and restart the server. Then edit `users/sessions/new.html.erb` and
+      `users/registrations/new.html.erb` (Photogram Industrial, Part 4: "Customizing
+      Devise views").
+    pg_feed_discover: >-
+      The page renders a photo card for each photo in `@photos` (`<%= render @photos %>`),
+      and UsersController fills `@photos` from an association on User: `current_user.feed`
+      or `current_user.discover`. Both go through `leaders`, and the test's user is only a
+      leader once their follow request is "accepted", so check the chain in the User
+      model: `accepted_sent_follow_requests`, then `leaders`, then `own_photos` (feed) or
+      `liked_photos` (discover).
+    pg_follow_button: >-
+      The follow button is `follow_requests/_follow_unfollow.html.erb`, rendered with
+      `sender: current_user` and a `recipient:`. It finds the sender's request to that
+      recipient and shows "Requested" for a pending one or "Following" for an accepted one
+      (each a `button_to` the request, `method: :delete`), or the follow form, with a
+      "Follow" button, when there's none. `pending?` and `accepted?` come from the `enum
+      :status` in FollowRequest.
+    pg_follow_lists: >-
+      The profile links to `followers_path(@user.username)` and
+      `follows_path(@user.username)`. UsersController sets `@followers = @user.followers`
+      and `@follows = @user.leaders`, and each template lists the users with the
+      `users/list_item` partial, which shows each username. Only accepted follow requests
+      count: `followers` goes through `accepted_received_follow_requests`, and `leaders`
+      through `accepted_sent_follow_requests`.
+    pg_follow_status: >-
+      A form can send any field, so FollowRequestsController#create shouldn't build the
+      request from every permitted param. Read only the `recipient_id` from the params,
+      set the `sender` to `current_user`, and set the status yourself: "pending" if the
+      recipient is `private?`, otherwise "accepted".
+    pg_like_button: >-
+      The like button comes from `photos/_likes.html.erb`. If the signed-in user hasn't
+      liked the photo, it renders the like form: a button with an outline heart
+      (`fa-regular fa-heart`) and `pluralize(photo.likes_count, "like")`. If they have,
+      it's a `button_to` the like, `method: :delete`, with a solid heart (`fa-solid
+      fa-heart`). The form only sends the `photo_id`, so LikesController#create sets
+      `@like.fan = current_user`, and both actions `redirect_back`.
+    pg_pending_page: >-
+      `users/pending.html.erb` lists `current_user.pending_received_follow_requests`. Each
+      request gets two `form_with(model: follow_request)` forms, each with a hidden
+      `status` field ("accepted" in one, "rejected" in the other) and an "Accept" or
+      "Reject" button. FollowRequestsController#update changes only the status and
+      redirects back; since `pending_received_follow_requests` uses the `-> { pending }`
+      scope, the request then drops off the list.
+    pg_photo_card: >-
+      `photos/_photo.html.erb` is the card that every page uses (`render @photo` on the
+      photo's page, `render @photos` on the others). It shows `image_tag photo.image` and
+      `photo.caption`, a `...` menu with an "Edit" link and a "Delete" `button_to`, the
+      photo's comments (`render photo.comments.default_order` inside a `<ul>`), and the
+      comment form (Photogram Industrial, Part 4: "The photo card partial").
+    pg_photo_form: >-
+      The photo form, `photos/_form.html.erb`, is a `form_with(model: photo)` with only
+      two fields, a `file_field :image` and a `text_area :caption`, each with a label
+      ("Image" and "Caption"; they can be `visually-hidden`). For a new photo, `form_with`
+      posts to /photos. The "Add photo" modal and `photos/new.html.erb` both render it,
+      and it displays each of `photo.errors` when a save fails (Photogram Industrial, Part
+      3).
+    pg_profile_page: >-
+      The profile, `users/show.html.erb`, ends with the Posts and Likes tabs (two
+      `<button>`s) and their panels. The Posts panel renders `@user.own_photos.latest`
+      only when `@user.photos_count.positive?`, and `photos_count` only goes up if Photo's
+      `belongs_to :owner` has `counter_cache: true` (Photogram Industrial, Part 4: "User
+      profile page").
+    pg_shared_partials: >-
+      The navigation is in partials in `app/views/shared/`: `_navbar` (the top bar),
+      `_left_sidebar` (the user menu, Feed, Discover, Add photo, Profile, and Settings),
+      `_right_sidebar`, `_bottom_navbar`, and `_photo_modal`. A partial only shows up if
+      `app/views/layouts/application.html.erb` renders it, so check that each `<%= render
+      "shared/..." %>` is in the layout (Photogram Industrial, Part 3).
+    pg_sign_out: >-
+      The test signs in, clicks your username (the button at the top of the left sidebar
+      that opens the user menu), and then clicks "Sign out" in that menu. Devise signs out
+      with a DELETE request, which a link can't send, so "Sign out" needs to be a
+      `button_to destroy_user_session_path, method: :delete`. Once you're signed out,
+      `authenticate_user!` sends you to /users/sign_in.
+
+    # --- pg-industrial-auth, pg-turbo ---
+
+    pg_private_profile: >-
+      On a private user's profile, everyone still sees the name, counts, and follow button
+      (so that they can ask to follow), but the Posts and Likes tabs should only render
+      for someone who may see them: `<% if allowed_to?(:show?, @user) %>` asks UserPolicy.
+      Show a line like "This account is private." to everyone else.
+    pg_visibility_rule: >-
+      Photogram's privacy rule has three parts, joined with `||`: you may see a user's
+      photos and follower lists if you are that user, if their account isn't private, or
+      if you are one of their accepted followers. `UserPolicy#show?` checks it for a user
+      (`record`), and `PhotoPolicy#show?` for a photo's owner (`record.owner`). Anything
+      that would reveal a private user's photo (its page, its likes list, liking it, or
+      commenting on it) should ask the photo's rule, with `authorize! photo, to: :show?`.
+
+    # --- pg-turbo ---
+
+    pg_comment_placeholder: >-
+      A comment's `...` menu depends on who is looking, and a model callback doesn't know
+      that. So the new-comment broadcast appends a placeholder: the comment's `<li>`,
+      holding an empty `turbo_frame_tag dom_id(comment, :content), src:
+      comment_path(comment)`. Each viewer's browser then loads the comment from
+      comments#show, as themselves.
+    pg_comment_show_frame_only: >-
+      comments#show exists only to fill a comment's Turbo Frame. Add `:show` to the
+      comments routes, and in the action, `return head(:not_found) unless
+      turbo_frame_request?`, then `authorize! @comment`, and render the `comments/comment`
+      partial (a partial has no layout). CommentPolicy needs a `show?` rule: you may see a
+      comment if you may see its photo.
+    pg_edit_in_place: >-
+      Editing in place works the same way for a photo card and for a comment. The card, or
+      the comment's contents, sits in a Turbo Frame with `target: "_top"`:
+      `turbo_frame_tag photo` (id `photo_42`) or `turbo_frame_tag dom_id(comment,
+      :content)`. The edit page wraps its form in a frame with the same id, and the form
+      partial, for a saved record only, gets `data: { turbo_frame: ... }` and a "Cancel"
+      link to the record's own URL in that frame.
+
+    # --- photogram-challenge ---
+
+    accepted_only: >-
+      A follow request only counts as following once its `status` is "accepted". Pending
+      and rejected requests must not count as followers, and must not give access to
+      photos, the feed, or discover. A method on `User` saves repeating the query: for
+      example, `following` can find the user's sent requests `.where({ :status =>
+      "accepted" })` and return `User.where({ :id => those_requests.pluck(:recipient_id)
+      })`.
+    count_rows: >-
+      Count the rows rather than displaying the `likes_count` or `comments_count` column:
+      nothing keeps those columns up to date unless you write code to do it. For example,
+      `the_photo.likes.count`. The view helper `pluralize(2, "like")` returns "2 likes",
+      and `pluralize(1, "like")` returns "1 like". And count only what the target counts:
+      a follower is someone whose request was accepted.
+    discover: >-
+      Discover is every photo liked by someone the signed-in user follows. Two steps: find
+      the likes whose `fan_id` is the ID of one of the users they follow, then
+      `Photo.where({ :id => those_likes.pluck(:photo_id) })`. A photo that two of them
+      liked still appears only once this way.
+    feed: >-
+      The feed is every photo posted by someone the signed-in user follows: `Photo.where({
+      :owner_id => ids })`, where `ids` are the IDs of the users they follow (the
+      recipients of their accepted follow requests).
+    follow_status: >-
+      In the action that creates the follow request, look up the recipient. If their
+      `private` column is true, set the status to "pending"; otherwise set it to
+      "accepted". The form only needs a hidden input with the recipient's ID.
+    hidden_status: >-
+      The two forms differ only in a hidden input: `<input type="hidden"
+      name="status_param" value="accepted">` in one, and `value="rejected"` in the other.
+      The action assigns that param to the request's status.
+    liked_photos: >-
+      Find the user's likes, then the photos that they point at: `Photo.where({ :id =>
+      the_likes.pluck(:photo_id) })`. (Or, with an association: `has_many(:liked_photos,
+      through: :likes, source: :photo)`.) The target displays them on the profile, in a
+      second tab.
+    no_self_follow: >-
+      In the action that creates the follow request, compare the recipient's ID with
+      `current_user.id` before saving, and redirect with an alert if they match.
+    optional_image: >-
+      When someone edits only the caption, the form's file input is empty and there is no
+      image param at all, so `params.fetch` on it raises an error. Only assign a new image
+      if `params.has_key?` says that one was sent.
+    pending_requests: >-
+      On the signed-in user's own profile, list the follow requests where they are the
+      recipient and the status is "pending". For each one, display the sender's username
+      next to two small forms that submit to `/modify_follow_request/ID`, one with an
+      "Accept" button and one with a "Reject" button.
+    permit_fields: >-
+      Devise ignores form fields that it hasn't been told to accept. In
+      `ApplicationController`, permit `:username` and `:private` for both `:sign_up` and
+      `:account_update` with `devise_parameter_sanitizer.permit`.
+    photogram_follow_button_states: >-
+      What a profile shows in place of the "Follow" button depends on the follow request,
+      if any, that the signed-in user sent to this user: `FollowRequest.where({ :sender_id
+      => current_user.id, :recipient_id => @the_user.id }).at(0)`. None: a "Follow"
+      button. "pending": "Request sent" and a "Cancel" link. "accepted": an "Unfollow"
+      link. "rejected": "Request declined". On your own profile: an "Edit profile" link to
+      `/users/edit`. "Cancel" and "Unfollow" both link to `/delete_follow_request/`
+      followed by the request's ID.
+    photogram_like_or_unlike: >-
+      Look for the signed-in user's like of this photo: `Like.where({ :fan_id =>
+      current_user.id, :photo_id => @the_photo.id }).at(0)`. If there isn't one, show the
+      "Like" button (a form that submits to `/insert_like`). If there is, show an "Unlike"
+      link to `/delete_like/` followed by that like's ID.
+    photogram_profile_url: >-
+      Profiles are found by username, not by ID: `/users/alice`. Link to one with
+      `href="/users/<%= a_user.username %>"`. The route has a dynamic segment for the
+      username (below `devise_for :users`), and the action looks the user up by the
+      `username` column instead of by `id`, for example `User.where({ :username =>
+      params.fetch("path_username") }).at(0)`.
+    photogram_tables: >-
+      The tests expect the five tables in the lesson's diagram, spelled exactly as it
+      spells them: `users`, `photos`, `comments`, `likes`, and `follow_requests` (the
+      model is `FollowRequest`, so generate it as `follow_request`), with foreign keys
+      like `owner_id`, `fan_id`, `author_id`, `sender_id`, and `recipient_id`, and the
+      types shown (`caption` and `body` are `text`). Generate `users` with Devise, which
+      adds `email` and `encrypted_password` itself; then `rails db:migrate`.
+    private_checkbox: >-
+      Add `f.check_box :private` and `f.label :private` to the sign-up and edit forms in
+      `app/views/devise/registrations/`.
+    private_everywhere: >-
+      The rule about private users' photos applies to every list, not only to their own
+      profile. A user that you follow may have liked a photo that you aren't allowed to
+      see; leave it out, for example with `.select` and the same check that you use on the
+      photo's own page.
+    private_photos: >-
+      A private user's photos are only for that user and for the people whose follow
+      requests they have accepted. On the profile, show the top of the page to everyone
+      (so that they can ask to follow) and leave out the photos. On the photo's own page,
+      `redirect_to` somewhere else with an alert. A method on the model that answers "may
+      this user see this photo?" is handy, because you'll need the answer in several
+      places.
+    public_photos: >-
+      Start from the users whose `private` column is false, then find the photos whose
+      `owner_id` is one of their IDs: `Photo.where({ :owner_id => public_users.pluck(:id)
+      })`.
+    real_image_uploads: >-
+      In the target, a photo's image is a file that the user uploads, not a URL that they
+      paste. Follow the guide "Adding Image Uploads with CarrierWave" up to where it says
+      that you can stop: add the gem, generate an uploader, `mount_uploader(:image,
+      ImageUploader)` in `Photo`, use an `<input type="file">` in a form with
+      `enctype="multipart/form-data"`, assign the param to `image` in the action, and
+      display it with `<img src="<%= a_photo.image_url %>">`. Then run `rake sample_data`
+      again.
+
+    # --- quizbot ---
+
+    canned_grader_quizbot: >-
+      `grade` never calls the real OpenAI API (so it never spends your credits). It
+      intercepts your app's request and always replies with the same canned message:
+      "Canned grading question: what is 2 + 2? ...". If this test shows an error, read it
+      closely: it's usually a problem in the action that the form submits to.
+    current_user_quizzes: >-
+      In the `index` action, start from `current_user.quizzes` instead of `Quiz.all`. (The
+      `User` model needs `has_many(:quizzes, ...)` for that method to exist.)
+    later_messages: >-
+      The messages that come after a message in the same quiz are
+      `the_quiz.messages.where("created_at > ?", the_message.created_at)`. Call
+      `.destroy_all` on them.
+    three_messages: >-
+      When a quiz is created, save three rows in the messages table that belong to it: one
+      with the role "system" (the instructions for the AI), one with the role "user"
+      (asking to be assessed), and one with the role "assistant" (the first question, from
+      `.generate!`).
+    tidy_username: >-
+      Add a `before_save` callback to the `User` model that runs a method of yours just
+      before a user is saved. In that method, assign `self.username =
+      self.username.strip.downcase`.
+
+    # --- rails-performance-basics ---
+
+    attached_image: >-
+      Each `url_for(photo.image)` looks up the photo's Active Storage attachment and blob.
+      Add `.with_attached_image` to the query in the controller to load them for all 25
+      photos at once.
+    eager_load_owner: >-
+      In `PhotosController#index`, eager load the association the template uses:
+      `Photo.includes(:owner)`. Rails then fetches all the owners in one `WHERE
+      "users"."id" IN (...)` query.
+    query_total: >-
+      Put the fixes together: `Photo.includes(:owner).with_attached_image` in the
+      controller, and `photo.comments_count` in the template. Check the `(N queries, M
+      cached)` part of the `Completed` line in the server log.
+
+    # --- rps-1-sinatra, rps-2-rails, rps-3-dynamic-routes ---
+
+    rps_computer_move: >-
+      The test visits this page 15 times and expects to see each of "They played rock!",
+      "They played paper!", and "They played scissors!" at least once, and only one of
+      them per visit. Pick the computer's move inside the action, so that every request
+      gets a new one, with `.sample` on an `Array` of the three moves, and word the
+      sentence exactly as the target does.
+    rps_outcome: >-
+      The test reads which move the computer played ("They played paper!") and then looks
+      for the matching outcome: "We won!", "We lost!", or "We tied!". Work the outcome out
+      with an `if`/`elsif`/`else` that compares the computer's move with the player's
+      move; the table on the target's homepage lists every combination. If the test can't
+      find "They played ..." at all, check that sentence's wording against the target
+      first.
+
+    # --- scoped-associations-and-callbacks ---
+
+    canned_grader_movie_callbacks: >-
+      `grade` never calls the real AI (so it never spends your credits). The test swaps
+      `AI::Chat` for a stand-in that only answers `.new`, `.system`, `.user`, and
+      `.generate!`, and replies with `{ content: "..." }`, so read the text with
+      `.fetch(:content)`. If you see "uninitialized constant AI", add `gem "ai-chat"` to
+      the `Gemfile` and run `bundle install`.
+
+    # --- slow-form-jobs ---
+
+    enqueue: >-
+      In `SubmissionsController#create`, replace the `sleep` and the `update!` with
+      `UppercaseSubmissionJob.perform_later(@submission)`, so the request only enqueues
+      the job and redirects right away.
+    job_class: >-
+      Generate the job with `bin/rails generate job uppercase_submission`, which creates
+      `app/jobs/uppercase_submission_job.rb` with a class that inherits from
+      `ApplicationJob`.
+    job_perform: >-
+      Inside `perform(submission)`, do the slow work and then save the result:
+      `submission.update!(body_uppercased: submission.body.upcase)`.
+
+    # --- todo-list-3-stimulus ---
+
+    todo_stimulus_character_counter: >-
+      The test expects `0 / 100` under the new item field, and `8 / 100` after it types
+      "Buy milk". In `app/views/items/_form.html.erb`, put the field and a counter line
+      inside one element with `data-controller="character-counter"`; mark the field as the
+      `input` target with an `input->character-counter#update` action, and the counter
+      line as the `counter` target. On a form helper, `data: { character_counter_target:
+      "input" }` comes out as `data-character-counter-target="input"`. The controller
+      itself goes in `app/javascript/controllers/character_counter_controller.js`.
+    todo_stimulus_dark_mode: >-
+      The test clicks a button labeled Dark and expects `<html data-theme="dark">`, then
+      clicks Light and expects `data-theme="light"`. The starter's
+      `app/javascript/controllers/dark_mode_controller.js` already does that work and
+      relabels its own button; it just isn't attached to anything yet. Attach it to
+      `<html>` in the layout, and add a `<button type="button">` to
+      `app/views/shared/_navbar.html.erb` with its own `data-controller="dark-mode"` and
+      `data-action="click->dark-mode#toggle"`.
+    todo_stimulus_toast: >-
+      The test adds an item, expects "Item added to Groceries" inside an element whose
+      `data-controller` includes `toast`, and then waits up to 6 seconds for that element
+      to go away. In `app/views/shared/_flash.html.erb`, give the alert a second
+      controller, `data-controller="dismiss toast"`. In
+      `app/javascript/controllers/toast_controller.js`, start a `setTimeout` in
+      `connect()` that removes `this.element` after a few seconds (fewer than 6), and
+      cancel it with `clearTimeout` in `disconnect()`.
+    todo_stimulus_warning_class: >-
+      The test types 101 characters and expects the counter target to have the class
+      `text-red-600`. Declare `static classes = ["warning"]` in the controller, pass the
+      class name from the view with `data-character-counter-warning-class="text-red-600"`
+      on the same element as `data-controller`, and add `this.warningClass` to the counter
+      when the count goes over `this.maxValue` (and remove it when the count drops back).
+
+    # --- todo-list-4-streams, todo-list-hotwire-native ---
+
+    todo_stream_create: >-
+      The test adds an item from the form in `#new_item_form` and expects the new row on
+      the page and the field empty again. First, the `<li>` around the new item form in
+      `app/views/lists/show.html.erb` needs `id="new_item_form"`, so that a stream can
+      target it. Then give `items#create` a `format.turbo_stream` branch, and in
+      `create.turbo_stream.erb` use two stream actions: `turbo_stream.before
+      "new_item_form", @item` to insert the row, and `turbo_stream.replace
+      "new_item_form"` with a fresh `<li id="new_item_form">` whose form is for a
+      brand-new item, so the field comes back empty.
+    todo_stream_create_invalid: >-
+      The test submits a blank item and expects "can't be blank" inside `#new_item_form`,
+      without a new `<body>`. The failed-save branch of `items#create` needs a stream
+      response too: `format.turbo_stream { render status: :unprocessable_content }`. Then
+      `create.turbo_stream.erb` has to handle both outcomes: insert a row only if
+      `@item.persisted?`, and when the save failed, replace `new_item_form` with a form
+      built from `@item` itself, which carries the errors.
+    todo_stream_destroy: >-
+      `items#destroy` has to answer a Turbo request with a stream instead of a redirect.
+      Keep the redirect as the `format.html` branch of a `respond_to` block, add a
+      `format.turbo_stream` branch, and create `app/views/items/destroy.turbo_stream.erb`
+      with one stream action that removes the item's row. The built-in
+      `turbo_stream.remove` accepts a record and works out its `dom_id` for you.
+    todo_stream_edit: >-
+      The test clicks Edit inside the item's row, changes the text, clicks Save, and
+      expects the row back with the new text and no text field. A link doesn't ask for a
+      stream on its own, so give the Edit link `data: { turbo_stream: true }`. Respond to
+      `items#edit` with `turbo_stream.update` of the row (its contents become a small edit
+      form with a Save button), and to a successful `items#update` with
+      `turbo_stream.replace` of the row with the item's own partial.
+    todo_stream_update_invalid: >-
+      The test clears the field in the row's edit form, clicks Save, and expects "can't be
+      blank" with the field still in the row. In the failed branch of `items#update`, add
+      `format.turbo_stream { render status: :unprocessable_content }`. In
+      `update.turbo_stream.erb`, when `@item.errors` isn't empty, `turbo_stream.update`
+      the row with the edit form partial again; spell out `partial:` and `locals:`, since
+      that isn't the item's default partial.
+
+    # --- todo-list-hotwire-native ---
+
+    todo_native_web_unchanged: >-
+      These specs drive an ordinary browser, and they passed on the starter, so a failure
+      here usually means a change made for the phone apps reached the web app too. Check
+      each `hotwire_native_app?` you added: browsers should still get the navbar, with its
+      Sign out button, and in `ApplicationController`, `after_sign_in_path_for` and
+      `after_sign_out_path_for` should send browsers where they went before (`super`, and
+      the sign-in page). Only the apps go to `/native-session-changed`.
